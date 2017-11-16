@@ -64,8 +64,10 @@ class Rotation:
         (N, M) = image.shape
         for ii in range(N):
             newline = []
+            y = ii # y corresponds to rows in the image
             for jj in range(M):
-                newline.append(Coord(ii, jj, image[ii][jj]))
+                x = jj # x corresponds to columns in the image
+                newline.append(Coord(x, y, image[ii][jj]))
             coordMatrix.append(newline)
         return coordMatrix
 
@@ -152,6 +154,8 @@ class Rotation:
 
     def temporaryRotatedImage(self, angle):
         """Return nearest neighbor rotated image"""
+        if angle % 360 == 0:
+            return self.inputImage
         rotatedCoordMatrix = self.getRotatedCoordMatrix(self.inputImage, angle)  # positive angle is counter clockwise
         (minRotRow, minRotCol) = self.getMinRowColRotatedCoords(rotatedCoordMatrix)
 

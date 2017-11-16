@@ -49,13 +49,17 @@ def makeVector(x, y, centroid):
     yV = centerY - y
     return [[xV], [yV]]
 
-def initializeCoordMatrix(image):
+
+def initializeCoordMatrix(self, image):
+    """Make a coordinate matrix from image """
     coordMatrix = []
     (N, M) = image.shape
     for ii in range(N):
         newline = []
+        y = ii  # y corresponds to rows in the image
         for jj in range(M):
-            newline.append(Coord(ii, jj, image[ii][jj]))
+            x = jj  # x corresponds to columns in the image
+            newline.append(Coord(x, y, image[ii][jj]))
         coordMatrix.append(newline)
     return coordMatrix
 
@@ -140,7 +144,7 @@ def makeEmptyRotatedImage(rotated_coord_matrix):
 
     return np.zeros((numRows, numCols), np.uint8)
 
-def temporaryNearestNeighborRotatedImage(image, angle):
+def temporaryRotatedImage(image, angle):
     """Return nearest neighbor rotated image"""
     rotatedCoordMatrix = getRotatedCoordMatrix(image, angle)  # positive angle is counter clockwise
     (minRotRow, minRotCol) = getMinRowColRotatedCoords(rotatedCoordMatrix)
@@ -153,6 +157,8 @@ def temporaryNearestNeighborRotatedImage(image, angle):
         for jj in range(MR):
             imageRow = int(np.round(eachInputLine[jj].y)) + -1*minRotRow
             imageCol = int(np.round(eachInputLine[jj].x)) + -1*minRotCol
+            print("imageRow: ", imageRow)
+            print("imageCol: ", imageCol)
             intensity = eachInputLine[jj].intensity
             rotated_image[imageRow][imageCol] = intensity
     return rotated_image
@@ -175,13 +181,19 @@ inputCoordMatrix = initializeCoordMatrix(lenna)
 
 printImageCoordMatrix(inputCoordMatrix)
 
-rotatedCoordMatrix = getRotatedCoordMatrix(lenna, 90) # positive angle clockwise
+rotatedCoordMatrix = getRotatedCoordMatrix(lenna, 0) # positive angle clockwise
 
 printImageCoordMatrix(rotatedCoordMatrix)
 
 
 print("\n\nMinimum Row, Column :", getMinRowColRotatedCoords(rotatedCoordMatrix))
 print("Maximum Row, Column :", getMaxRowColRotatedCoords(rotatedCoordMatrix))
+
+rotated_image = temporaryRotatedImage(lenna, 0) # positive angle is counter clockwise
+cv2.imshow("Rotated Image", rotated_image)                              # negative angle is clockwise
+cv2.waitKey()
+
+pim.printUnsignedImage(rotated_image)
 
 
 # empty_image = makeEmptyRotatedImage(rotatedCoordMatrix)

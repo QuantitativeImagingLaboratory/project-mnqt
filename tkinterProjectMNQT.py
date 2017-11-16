@@ -126,13 +126,12 @@ class ProjectMNQT_UI:
 
     def getInputImage(self):
         filename = filedialog.askopenfilename()
-        print("Setting input image to: ", filename)
 
         self.inputImage = cv2.imread(filename)
         self.inputImage = cv2.cvtColor(self.inputImage, cv2.COLOR_RGB2GRAY)
 
         self.displayImageOnLabel(self.inputImageLabel, self.inputImage, self.IMAGE_SIZE)
-        self.setStatus("Loaded input image.")
+        self.setStatus("Loaded input image: " + filename)
 
     def runTransformation(self):
         if self.inputImage is None:
@@ -146,13 +145,13 @@ class ProjectMNQT_UI:
             self.outputImageLabel.image = rotated_image_display
             self.setStatus("Rotated image " + str(self.retrieveRotationAngle()) + "°.")
         else:
-            print("Rotation is not selected.")
+            self.setStatus("No image geometric transformation is selected.")
 
     def retrieveRotationAngle(self):
         rotationAngleString = self.rotationAngleEntry.get()
         rotationAngle = 0
         try:
-            rotationAngle = int(rotationAngleString)
+            rotationAngle = float(rotationAngleString)
             self.setStatus("Setting rotation angle to " + str(rotationAngle) + "°")
         except ValueError:
             self.setStatus("Setting default rotation angle to 0°")
