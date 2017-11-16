@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 from PIL import *
 import cv2
 import numpy as np
+from Rotation import Rotation
 
 
 class ProjectMNQT_UI:
@@ -137,11 +138,13 @@ class ProjectMNQT_UI:
         if self.inputImage is None:
             self.setStatus("Please load and input image.")
             return
-        print("Inside runTransformation")
         if self.rotationSelection.get() == 1:
-            print("Rotation is selected. Rotation angle is ", self.retrieveRotationAngle())
-            print("The interpolation is : ", self.interpVar.get())
-
+            rotationObject = Rotation(self.inputImage)
+            rotated_image = rotationObject.temporaryRotatedImage(self.retrieveRotationAngle())
+            rotated_image_display = self.makeDisplayImage(rotated_image, self.IMAGE_SIZE)
+            self.outputImageLabel.configure(image=rotated_image_display)
+            self.outputImageLabel.image = rotated_image_display
+            self.setStatus("Rotated image " + str(self.retrieveRotationAngle()) + "°.")
         else:
             print("Rotation is not selected.")
 
@@ -150,7 +153,7 @@ class ProjectMNQT_UI:
         rotationAngle = 0
         try:
             rotationAngle = int(rotationAngleString)
-            self.setStatus("Setting default rotation angle to " + str(rotationAngle) + "°")
+            self.setStatus("Setting rotation angle to " + str(rotationAngle) + "°")
         except ValueError:
             self.setStatus("Setting default rotation angle to 0°")
         return rotationAngle
