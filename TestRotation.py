@@ -205,4 +205,3 @@ pim.printUnsignedImage(rotated_image)
 # rotated_image = rotationObject.temporaryRotatedImage(-60) # positive angle is counter clockwise
 # cv2.imshow("Rotated Image", rotated_image)                              # negative angle is clockwise
 # cv2.waitKey()
-
