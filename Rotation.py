@@ -152,6 +152,24 @@ class Rotation:
 
         return np.zeros((numRows, numCols), np.uint8)
 
+    def makeEmptyRotatedImageCoordMatrix(self, rotated_coord_matrix):
+        """ Return empty rotated image without intensities but for full extent """
+        (minRow, minCol) = self.getMinRowColRotatedCoords(rotated_coord_matrix)
+        (maxRow, maxCol) = self.getMaxRowColRotatedCoords(rotated_coord_matrix)
+
+        numRows = maxRow - minRow + 1  # these will make the size of the rotated image
+        numCols = maxCol - minCol + 1
+
+        empty_rotated_coord_matrix = []
+        for ii in range(numRows):
+            newline = []
+            y = ii + minRow  # y corresponds to rows in the image
+            for jj in range(numCols):
+                x = jj + minCol  # x corresponds to columns in the image
+                newline.append(Coord(x, y, 0))
+            empty_rotated_coord_matrix.append(newline)
+        return empty_rotated_coord_matrix
+
     def temporaryRotatedImage(self, angle):
         """Return nearest neighbor rotated image"""
         if angle % 360 == 0:
@@ -170,3 +188,33 @@ class Rotation:
                 intensity = eachInputLine[jj].intensity
                 rotated_image[imageRow][imageCol] = intensity
         return rotated_image
+
+
+    def rotateBackwards_NearestNeighbor(self, rotation_all_coord_matrix, backwards_angle):
+        """Rotate Backwards and get nearest neighbor"""
+        (NInput, MInput) = self.inputImage.shape
+
+        numRotatedRows = len(rotation_all_coord_matrix)
+        centroid = self.getCentroid(self.inputImage.shape)
+
+        for ii in range(numRotatedRows):
+            M = len(rotation_all_coord_matrix[ii])
+            eachInputLine = rotation_all_coord_matrix[ii]
+            for jj in range(M):
+                x = eachInputLine[jj].x
+                y = eachInputLine[jj].y
+                vec = self.makeVector(x, y, centroid)
+                rotvec = self.rotateVector(vec, backwards_angle)
+                rotX = float(rotvec[0][0])
+                rotY = float(rotvec[1][0])
+                if rotX < -0.5 or rotX > MInput - 0.5 or rotY < -0.5 or rotY > NInput - 0.5:
+                    eachInputLine[jj].intensity = 0
+                else:
+                    roundedRow = int(np.round(rotY))
+                    roundedCol = int(np.round(rotX))
+                    print("Rounded row/col: ", (roundedRow, roundedCol))
+                    eachInputLine[jj].intensity = self.inputImage[roundedRow][roundedCol]
+        return rotation_all_coord_matrix
+
+
+
