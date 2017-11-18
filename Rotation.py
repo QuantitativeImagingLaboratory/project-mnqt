@@ -212,7 +212,7 @@ class Rotation:
                 else:
                     roundedRow = int(np.round(rotY))
                     roundedCol = int(np.round(rotX))
-                    print("Rounded row/col: ", (roundedRow, roundedCol))
+                    #print("Rounded row/col: ", (roundedRow, roundedCol))
                     eachInputLine[jj].intensity = self.inputImage[roundedRow][roundedCol]
         return rotation_all_coord_matrix
 

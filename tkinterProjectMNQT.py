@@ -6,6 +6,8 @@ from PIL import *
 import cv2
 import numpy as np
 from Rotation import Rotation
+from Rotation2 import Rotation2
+
 
 
 class ProjectMNQT_UI:
@@ -182,11 +184,14 @@ class ProjectMNQT_UI:
             return
 
         if self.transformationSelection.get() == 1:
-            rotationObject = Rotation(self.inputImage)
-            rotated_image = rotationObject.temporaryRotatedImage(self.retrieveRotationAngle())
+            rotationObject = Rotation2(self.inputImage, self.retrieveRotationAngle())
+
+            rotated_image = rotationObject.rotateImage_NearestNeighbor()
+
             rotated_image_display = self.makeDisplayImage(rotated_image, self.IMAGE_SIZE)
             self.outputImageLabel.configure(image=rotated_image_display)
             self.outputImageLabel.image = rotated_image_display
+
             self.setStatus("Rotated image " + str(self.retrieveRotationAngle()) + "°.")
 
         elif self.transformationSelection.get() == 2:

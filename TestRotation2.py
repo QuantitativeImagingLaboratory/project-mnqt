@@ -19,11 +19,11 @@ rotationObject = Rotation(lenna)
 
 
 
-rotatedCoordMatrix = rotationObject.getRotatedCoordMatrix(lenna, 45)
+rotatedCoordMatrix = rotationObject.getRotatedCoordMatrix(lenna, 90)
 rotationObject.printImageCoordMatrix(rotatedCoordMatrix)
 
 
-rotated_image = rotationObject.temporaryRotatedImage(45)
+rotated_image = rotationObject.temporaryRotatedImage(90)
 cv2.imshow("Rotated Image", rotated_image)                              # negative angle is clockwise
 cv2.waitKey()
 
