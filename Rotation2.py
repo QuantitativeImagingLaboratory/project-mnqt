@@ -50,7 +50,7 @@ class Rotation2:
         """Return a vector of x and y"""
         (centerX, centerY) = centroid
         xV = x - centerX
-        yV = y - centerY
+        yV = centerY - y
         return [[xV], [yV]]
 
 
@@ -72,6 +72,7 @@ class Rotation2:
         """ Rotate the 4 corners of the image to find the extent of the rotated image """
         (N, M) = self.inputImage.shape
         corners = [(0,0), (0, N-1), (M-1, N-1), (M-1, 0)]
+        #print(corners)
         rotated_corners = []
         for corner in corners:
             x = corner[0]   # x corresponds to columns
@@ -81,7 +82,7 @@ class Rotation2:
             rot_vec1_x = float(rot_vec1[0][0])
             rot_vec1_y = float(rot_vec1[1][0])
             rot_x = int(np.round(rot_vec1_x + self.centroid[0]))
-            rot_y = int(np.round(rot_vec1_y + self.centroid[1]))
+            rot_y = int(np.round(self.centroid[1] - rot_vec1_y))
             rotated_corners.append( (rot_x, rot_y) )
         #print(rotated_corners)
         return rotated_corners
@@ -130,9 +131,9 @@ class Rotation2:
 
                 vec = self.makeVector(rot_x, rot_y, self.centroid)
                 inp_vec = self.rotateVector(vec, self.rotation_angle*-1)
-                #print("ROTXY:", (rot_x, rot_y), ", Vec", vec, " RotVec,", inp_vec)
-                inp_vec_x = self.centroid[0] + float(inp_vec[0][0])
-                inp_vec_y = self.centroid[1] + float(inp_vec[1][0])
+                inp_vec_x = float(inp_vec[0][0]) + self.centroid[0]
+                inp_vec_y = self.centroid[1] - float(inp_vec[1][0])
+                #print("ROTXY:", (rot_x, rot_y), ", Vec", vec, " InpVec,", inp_vec, " INP_VecXY", (inp_vec_x, inp_vec_y) )
 
                 newRotCoord = RotationCoord(rot_row, rot_col, rot_x, rot_y, inp_vec_x, inp_vec_y)
                 newline.append(newRotCoord)
@@ -164,7 +165,7 @@ class Rotation2:
             print("", end="\n")
 
 
-    def populate4SurroundingInputImagePoints(self, rotation_coord_matrix):
+    def get_4_neighborhood(self, rotation_coord_matrix):
         """ Get surrounding input Image points"""
         N = len(rotation_coord_matrix)
         for ii in range(N):
@@ -202,6 +203,11 @@ class Rotation2:
                     current_row[jj].input_image_surrounding_points.append((ceilCol, ceilRow, 0))
 
 
+    def get_16_neighborhood(self, rotation_coord_matrix):
+        """ Get surrounding input Image points"""
+        return
+
+
     def isRCWithinInputImage(self, row, col):
         """ Return True if row, column is valid for input image """
         (N, M) = self.inputImage.shape
@@ -214,8 +220,10 @@ class Rotation2:
 
     def rotateImage_NearestNeighbor(self):
         """ Rotate Image and do Nearest Neighbor """
-        rotation_coord_matrix = self.initializeRotationCoordMatrix()
+        if self.rotation_angle % 360 == 0:
+            return self.inputImage
 
+        rotation_coord_matrix = self.initializeRotationCoordMatrix()
         rotated_image = self.makeEmptyRotatedImage()
 
         N = len(rotation_coord_matrix)
@@ -244,3 +252,4 @@ class Rotation2:
         """ Rotate Image and do Bicubic Interpolation"""
         rotated_image = self.rotateImage_NearestNeighbor()
         return rotated_image
+
