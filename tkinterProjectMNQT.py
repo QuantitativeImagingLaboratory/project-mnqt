@@ -5,7 +5,6 @@ from PIL import Image, ImageTk
 from PIL import *
 import cv2
 import numpy as np
-from Rotation import Rotation
 from Rotation2 import Rotation2
 
 
