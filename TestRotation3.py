@@ -16,7 +16,7 @@ print("Lenna shape: ", lenna.shape)
 cv2.imshow("Input Image", lenna)
 cv2.waitKey()
 
-rotObject = Rotation2(lenna, 45)
+rotObject = Rotation2(lenna, 180)
 rotated_corners = rotObject.rotateCorners()
 rotation_coord_matrix = rotObject.initializeRotationCoordMatrix()
 rotObject.printImageCoordMatrix(rotation_coord_matrix)
@@ -37,3 +37,4 @@ rotObject.printImageCoordMatrix(rotation_coord_matrix)
 # print("rotated_image shape: ", rotated_image.shape)
 # cv2.imshow("rotated_image Image", rotated_image)
 # cv2.waitKey()
+

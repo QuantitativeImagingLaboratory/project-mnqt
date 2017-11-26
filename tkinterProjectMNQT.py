@@ -18,6 +18,9 @@ class ProjectMNQT_UI:
     inputImageLabel = None
     outputImageLabel = None
 
+    inputImageShapeLabel = None
+    outputImageShapeLabel = None
+
     # gui entries
     rotationAngleEntry = None
     scaling_x_Entry = None
@@ -108,64 +111,70 @@ class ProjectMNQT_UI:
         self.outputImageLabel.configure(image=empty_image_display)
         self.outputImageLabel.image = empty_image_display
 
+        ## ****** Input image shape label ******
+        self.inputImageShapeLabel = Label(self.mainframe, text="", bd=1, anchor=W, fg="red", bg="gainsboro")
+        self.inputImageShapeLabel.grid(row=4, column=0, columnspan=2, rowspan=1, padx=50, pady=0)
 
+        ## ****** Output image shape label ******
+        self.outputImageShapeLabel = Label(self.mainframe, text="", bd=1, anchor=W, fg="red", bg="gainsboro")
+        self.outputImageShapeLabel.grid(row=4, column=6, columnspan=2, rowspan=1, padx=50, pady=0)
 
         ## ****** Rotate Widget ******
         self.transformationSelection = IntVar()
         self.transformationSelection.set(0)
         rotationRadioButton = Radiobutton(self.mainframe, text="  Rotation (° counter clockwise)", font=mySmallFont, bg="gainsboro",
                                           variable=self.transformationSelection, value = 1)
-        rotationRadioButton.grid(row=4, column=0, columnspan=2, rowspan=1, sticky=W, padx=50, pady=20)
+        rotationRadioButton.grid(row=5, column=0, columnspan=2, rowspan=1, sticky=W, padx=50, pady=20)
 
         self.rotationAngleEntry = Entry(self.mainframe)
-        self.rotationAngleEntry.grid(row=4, column=2, columnspan=1, rowspan=1, sticky=W)
+        self.rotationAngleEntry.grid(row=5, column=2, columnspan=1, rowspan=1, sticky=W)
         self.rotationAngleEntry.insert(0, '0')
 
         ## ****** Scaling Widget ******
         scalingRadioButton = Radiobutton(self.mainframe, text="  Scaling", font=mySmallFont, bg="gainsboro",
                                           variable=self.transformationSelection, value = 2)
-        scalingRadioButton.grid(row=5, column=0, columnspan=1, rowspan=1, sticky=W, padx=50, pady=20)
+        scalingRadioButton.grid(row=6, column=0, columnspan=1, rowspan=1, sticky=W, padx=50, pady=20)
 
         self.scaling_x_Entry = Entry(self.mainframe)
-        self.scaling_x_Entry.grid(row=5, column=1, columnspan=1, rowspan=1, sticky=W)
+        self.scaling_x_Entry.grid(row=6, column=1, columnspan=1, rowspan=1, sticky=W)
         self.scaling_x_Entry.insert(0, 'Height')
 
         self.scaling_y_Entry = Entry(self.mainframe)
-        self.scaling_y_Entry.grid(row=5, column=2, columnspan=1, rowspan=1, sticky=W)
+        self.scaling_y_Entry.grid(row=6, column=2, columnspan=1, rowspan=1, sticky=W)
         self.scaling_y_Entry.insert(0, 'Width')
 
         ## ****** Interpolation Pulldown ******
         interpolationLabel = Label(self.mainframe, text="        Interpolation:", bg="gainsboro", font=mySmallFont)
-        interpolationLabel.grid(row=6, column=0, columnspan=2, rowspan=1, sticky=W, padx=50, pady=20)
+        interpolationLabel.grid(row=7, column=0, columnspan=2, rowspan=1, sticky=W, padx=50, pady=20)
 
         self.interpVar = StringVar(self.mainframe)
         self.interpVar.set("Interpolation");
 
         interpolationPullDown = OptionMenu(self.mainframe, self.interpVar, "Nearest Neighbor", "Bilinear", "Bicubic")
-        interpolationPullDown.grid(row=6, column=2, columnspan=2, rowspan=1, sticky=W, padx=0, pady=20)
+        interpolationPullDown.grid(row=7, column=2, columnspan=2, rowspan=1, sticky=W, padx=0, pady=20)
 
         ## ****** Reflection Widget ******
         reflectionRadioButton = Radiobutton(self.mainframe, text="  Reflection", font=mySmallFont, bg="gainsboro",
                                           variable=self.transformationSelection, value = 3)
-        reflectionRadioButton.grid(row=4, column=5, columnspan=1, rowspan=1, sticky=W, padx=0, pady=20)
+        reflectionRadioButton.grid(row=5, column=5, columnspan=1, rowspan=1, sticky=W, padx=0, pady=20)
 
         self.reflectionVar = StringVar(self.mainframe)
         self.reflectionVar.set("Flip Type");
 
         reflectionPullDown = OptionMenu(self.mainframe, self.reflectionVar, "Left Right", "Top Bottom", "Diagonal")
-        reflectionPullDown.grid(row=4, column=6, columnspan=2, rowspan=1, sticky=W, padx=0, pady=20)
+        reflectionPullDown.grid(row=5, column=6, columnspan=2, rowspan=1, sticky=W, padx=0, pady=20)
 
         ## ****** Scaling Widget ******
         translationRadioButton = Radiobutton(self.mainframe, text="  Translation", font=mySmallFont, bg="gainsboro",
                                          variable=self.transformationSelection, value=4)
-        translationRadioButton.grid(row=5, column=5, columnspan=1, rowspan=1, sticky=W, padx=0, pady=20)
+        translationRadioButton.grid(row=6, column=5, columnspan=1, rowspan=1, sticky=W, padx=0, pady=20)
 
         self.translation_x_Entry = Entry(self.mainframe)
-        self.translation_x_Entry.grid(row=5, column=6, columnspan=1, rowspan=1, sticky=W)
+        self.translation_x_Entry.grid(row=6, column=6, columnspan=1, rowspan=1, sticky=W)
         self.translation_x_Entry.insert(0, 'x:px')
 
         self.translation_y_Entry = Entry(self.mainframe)
-        self.translation_y_Entry.grid(row=5, column=7, columnspan=1, rowspan=1, sticky=W)
+        self.translation_y_Entry.grid(row=6, column=7, columnspan=1, rowspan=1, sticky=W)
         self.translation_y_Entry.insert(0, 'y:px')
 
     def getInputImage(self):
@@ -175,6 +184,12 @@ class ProjectMNQT_UI:
         self.inputImage = cv2.cvtColor(self.inputImage, cv2.COLOR_RGB2GRAY)
 
         self.displayImageOnLabel(self.inputImageLabel, self.inputImage, self.IMAGE_SIZE)
+
+        image_shape = self.inputImage.shape
+        image_shape_str = "Input Image Size: " + str(image_shape)
+        self.inputImageShapeLabel.configure(text=image_shape_str)
+        self.inputImageShapeLabel.text = image_shape_str
+
         self.setStatus("Loaded input image: " + filename)
 
     def runTransformation(self):
@@ -197,9 +212,11 @@ class ProjectMNQT_UI:
                 rotated_image = rotationObject.rotateImage_NearestNeighbor()
                 rotationType = "Nearest Neighbor"
 
+            self.setOutputImageShape(rotated_image.shape)
             rotated_image_display = self.makeDisplayImage(rotated_image, self.IMAGE_SIZE)
             self.outputImageLabel.configure(image=rotated_image_display)
             self.outputImageLabel.image = rotated_image_display
+
 
             self.setStatus("Rotated image " + str(self.retrieveRotationAngle()) + "° using " + rotationType +
                             " interpolation.")
@@ -235,6 +252,11 @@ class ProjectMNQT_UI:
         self.statusLabel.configure(text=statusString)
         self.statusLabel.text = statusString
 
+    def setOutputImageShape(self, shape):
+        """ set output image label string """
+        image_shape_str = "Output Image Size: " + str(shape)
+        self.outputImageShapeLabel.configure(text=image_shape_str)
+        self.outputImageShapeLabel.text = image_shape_str
 
     def displayImageOnLabel(self, label, image, image_size):
         """ Display input image on input label"""

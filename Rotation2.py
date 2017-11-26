@@ -250,8 +250,14 @@ class Rotation2:
 
     def rotateImage_NearestNeighbor(self):
         """ Rotate Image and do Nearest Neighbor """
-        if self.rotation_angle % 360 == 0:
+        if np.abs(self.rotation_angle % 360) == 0:
             return self.inputImage
+        # elif np.abs(self.rotation_angle % 270) == 0:
+        #     return self.rotateImage270()
+        # elif np.abs(self.rotation_angle % 180) == 0:
+        #     return self.rotateImage180()
+        # elif np.abs(self.rotation_angle % 90) == 0:
+        #     return self.rotateImage90()
 
         rotation_coord_matrix = self.initializeRotationCoordMatrix()
         rotated_image = self.makeEmptyRotatedImage()
@@ -272,6 +278,32 @@ class Rotation2:
 
         return rotated_image
 
+    def rotateImage270(self):
+        """ Rotate Image 270° """
+        (N, M) = self.inputImage.shape
+        rotated_image = np.zeros((M, N), np.uint8)
+        for ii in range(N):
+            for jj in range(M):
+                rotated_image[jj][N-ii-1] = self.inputImage[ii][jj]
+        return rotated_image
+
+    def rotateImage180(self):
+        """ Rotate Image 180° """
+        (N, M) = self.inputImage.shape
+        rotated_image = np.zeros((N, M), np.uint8)
+        for ii in range(N):
+            for jj in range(M):
+                rotated_image[N-ii-1][jj] = self.inputImage[ii][jj]
+        return rotated_image
+
+    def rotateImage90(self):
+        """ Rotate Image 90° """
+        (N, M) = self.inputImage.shape
+        rotated_image = np.zeros((M, N), np.uint8)
+        for ii in range(N):
+            for jj in range(M):
+                rotated_image[jj][ii] = self.inputImage[ii][jj]
+        return rotated_image
 
     def rotateImage_Bilinear(self):
         """ Rotate Image and do Bilinear Interpolation """
