@@ -6,7 +6,7 @@ from PIL import *
 import cv2
 import numpy as np
 from Rotation2 import Rotation2
-
+from scale import Scale
 
 
 class ProjectMNQT_UI:
@@ -238,8 +238,14 @@ class ProjectMNQT_UI:
                             " interpolation.")
 
         elif self.transformationSelection.get() == 2:
-            print("Scaling Radio Button Selected")
-            self.setStatus("Scaling image.")
+            scale_object = Scale()
+            
+            scaled_image = scale_object.resize(self.inputImage, self.scaling_x_Entry.get(), self.scaling_y_Entry.get(), self.interpVar.get())
+            scaled_image_display = self.makeDisplayImage(scaled_image, self.IMAGE_SIZE)
+            self.outputImageLabel.configure(image=scaled_image_display)
+            self.outputImageLabel.image = scaled_image_display
+            
+            self.setStatus("Scaled image using " + self.interpVar.get() + " interpolation.")
 
         elif self.transformationSelection.get() == 3:
             print("Reflection Radio Button Selected")
