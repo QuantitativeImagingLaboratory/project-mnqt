@@ -278,6 +278,7 @@ class ProjectMNQT_UI:
             
             sheared_image = shear_object.shear(self.inputImage, self.shear_m_Entry.get(), self.shear_var.get(), self.interpVar.get())
             sheared_image_display = self.makeDisplayImage(sheared_image, self.IMAGE_SIZE)
+            self.setOutputImageShape(sheared_image.shape)
             self.outputImageLabel.configure(image=sheared_image_display)
             self.outputImageLabel.image = sheared_image_display
             
