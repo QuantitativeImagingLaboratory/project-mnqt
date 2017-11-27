@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 from Rotation2 import Rotation2
 from scale import Scale
-
+from shear import Shear
 
 class ProjectMNQT_UI:
 
@@ -27,10 +27,12 @@ class ProjectMNQT_UI:
     scaling_y_Entry = None
     translation_x_Entry = None
     translation_y_Entry = None
+    shear_m_Entry = None
 
     # gui pulldown
     interpVar = None
     reflectionVar = None
+    shear_var = None
 
     maincanvas = None
     vsb = None
@@ -154,16 +156,6 @@ class ProjectMNQT_UI:
         self.scaling_y_Entry.grid(row=6, column=2, columnspan=1, rowspan=1, sticky=W)
         self.scaling_y_Entry.insert(0, 'Width')
 
-        ## ****** Interpolation Pulldown ******
-        interpolationLabel = Label(self.mainframe, text="        Interpolation:", bg="gainsboro", font=mySmallFont)
-        interpolationLabel.grid(row=7, column=0, columnspan=2, rowspan=1, sticky=W, padx=50, pady=20)
-
-        self.interpVar = StringVar(self.mainframe)
-        self.interpVar.set("Interpolation");
-
-        interpolationPullDown = OptionMenu(self.mainframe, self.interpVar, "Nearest Neighbor", "Bilinear", "Bicubic")
-        interpolationPullDown.grid(row=7, column=2, columnspan=2, rowspan=1, sticky=W, padx=0, pady=20)
-
         ## ****** Reflection Widget ******
         reflectionRadioButton = Radiobutton(self.mainframe, text="  Reflection", font=mySmallFont, bg="gainsboro",
                                           variable=self.transformationSelection, value = 3)
@@ -175,7 +167,7 @@ class ProjectMNQT_UI:
         reflectionPullDown = OptionMenu(self.mainframe, self.reflectionVar, "X-axis", "Y-axis", "Y=X")
         reflectionPullDown.grid(row=5, column=6, columnspan=2, rowspan=1, sticky=W, padx=0, pady=20)
 
-        ## ****** Scaling Widget ******
+        ## ****** Translation Widget ******
         translationRadioButton = Radiobutton(self.mainframe, text="  Translation", font=mySmallFont, bg="gainsboro",
                                          variable=self.transformationSelection, value=4)
         translationRadioButton.grid(row=6, column=5, columnspan=1, rowspan=1, sticky=W, padx=0, pady=20)
@@ -187,6 +179,31 @@ class ProjectMNQT_UI:
         self.translation_y_Entry = Entry(self.mainframe)
         self.translation_y_Entry.grid(row=6, column=7, columnspan=1, rowspan=1, sticky=W)
         self.translation_y_Entry.insert(0, 'y:px')
+
+        ## ****** Shearing Widget ******
+        shearRadioButton = Radiobutton(self.mainframe, text="  Shear", font=mySmallFont, bg="gainsboro",
+                                          variable=self.transformationSelection, value = 5)
+        shearRadioButton.grid(row=7, column=0, columnspan=1, rowspan=1, sticky=W, padx=50, pady=20)
+
+        self.shear_m_Entry = Entry(self.mainframe)
+        self.shear_m_Entry.grid(row=7, column=1, columnspan=1, rowspan=1, sticky=W)
+        self.shear_m_Entry.insert(0, 'multiplier')
+
+        self.shear_var = StringVar(self.mainframe)
+        self.shear_var.set("Shear Type");
+
+        shearPullDown = OptionMenu(self.mainframe, self.shear_var, "Horizontal", "Vertical")
+        shearPullDown.grid(row=7, column=2, columnspan=2, rowspan=1, sticky=W, padx=0, pady=20)
+
+        ## ****** Interpolation Pulldown ******
+        interpolationLabel = Label(self.mainframe, text="        Interpolation:", bg="gainsboro", font=mySmallFont)
+        interpolationLabel.grid(row=8, column=0, columnspan=2, rowspan=1, sticky=W, padx=50, pady=20)
+
+        self.interpVar = StringVar(self.mainframe)
+        self.interpVar.set("Interpolation");
+
+        interpolationPullDown = OptionMenu(self.mainframe, self.interpVar, "Nearest Neighbor", "Bilinear", "Bicubic")
+        interpolationPullDown.grid(row=8, column=2, columnspan=2, rowspan=1, sticky=W, padx=0, pady=20)
 
 
     def onFrameConfigure(self, event):
@@ -254,6 +271,16 @@ class ProjectMNQT_UI:
         elif self.transformationSelection.get() == 4:
             print("Translation Radio Button Selected")
             self.setStatus("Translating image.")
+
+        elif self.transformationSelection.get() == 5:
+            shear_object = Shear()
+            
+            sheared_image = shear_object.shear(self.inputImage, self.shear_m_Entry.get(), self.shear_var.get(), self.interpVar.get())
+            sheared_image_display = self.makeDisplayImage(sheared_image, self.IMAGE_SIZE)
+            self.outputImageLabel.configure(image=sheared_image_display)
+            self.outputImageLabel.image = sheared_image_display
+            
+            self.setStatus("Sheared image using " + self.interpVar.get() + " interpolation.")
 
         else:
             self.setStatus("No image geometric transformation is selected.")
