@@ -32,6 +32,8 @@ class ProjectMNQT_UI:
     interpVar = None
     reflectionVar = None
 
+    maincanvas = None
+    vsb = None
     mainframe = None
 
     # radio buttons
@@ -75,12 +77,21 @@ class ProjectMNQT_UI:
         self.statusLabel = Label(root, text="Started Project GUI", bd=1, relief=SUNKEN, anchor=W)
         self.statusLabel.pack(side=BOTTOM, fill=X)
 
+        ## ****** Main Canvas  ******
+        self.maincanvas = Canvas(root, borderwidth=0, background="gainsboro")
+        self.vsb = Scrollbar(root, orient="vertical", command=self.maincanvas.yview)
+        self.maincanvas.configure(yscrollcommand=self.vsb.set)
+
+        self.vsb.pack(side="right", fill="y")
+        self.maincanvas.pack(side="left", fill="both", expand=True)
+
+
         ## ****** Main Window Frame ******
-        self.mainframe = Frame(root, bg="gainsboro")  # frame is a blank widget
-        self.mainframe.pack()
-
-        self.mainframe.columnconfigure(1, weight=1)
-
+        self.mainframe = Frame(self.maincanvas, bg="gainsboro")  # frame is a blank widget
+        #self.mainframe.pack()
+        self.maincanvas.create_window((4,4), window=self.mainframe ,anchor="nw",
+                                  tags="self.mainframe")
+        self.mainframe.bind("<Configure>", self.onFrameConfigure)
 
         ## ****** Input image ******
         self.inputImageLabel = Label(self.mainframe)
@@ -176,6 +187,11 @@ class ProjectMNQT_UI:
         self.translation_y_Entry = Entry(self.mainframe)
         self.translation_y_Entry.grid(row=6, column=7, columnspan=1, rowspan=1, sticky=W)
         self.translation_y_Entry.insert(0, 'y:px')
+
+
+    def onFrameConfigure(self, event):
+        '''Reset the scroll region to encompass the inner frame'''
+        self.maincanvas.configure(scrollregion=self.maincanvas.bbox("all"))
 
     def getInputImage(self):
         filename = filedialog.askopenfilename()
