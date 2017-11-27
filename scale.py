@@ -12,10 +12,8 @@ class Scale:
     def resize(self, image, new_width, new_height, interpolation):
         """ Calls the appropriate function to scale the image based on the interpolation method """
         
-        # ensure values are floats so that the interpolation works properly
-        width, height = image.shape
-        fx = float(new_width)/width
-        fy = float(new_height)/height
+        new_width = int(new_width)
+        new_height = int(new_height)
             
         if interpolation == 'Bilinear':
             return self.scale_bilinear(image, new_width, new_height)
@@ -33,8 +31,6 @@ class Scale:
         width, height = image.shape
         fx = float(new_width)/width
         fy = float(new_height)/height
-        new_width = int(new_width)
-        new_height = int(new_height)
         
         new_image = np.zeros((new_width, new_height))
         for i in range(new_width):
@@ -49,8 +45,6 @@ class Scale:
         width, height = image.shape
         fx = float(new_width)/width
         fy = float(new_height)/height
-        new_width = int(new_width)
-        new_height = int(new_height)
         
         new_image = np.zeros((new_width, new_height))
         
@@ -82,8 +76,6 @@ class Scale:
         width, height = image.shape
         fx = float(new_width)/width
         fy = float(new_height)/height
-        new_width = int(new_width)
-        new_height = int(new_height)
         
         new_image = np.zeros
         
