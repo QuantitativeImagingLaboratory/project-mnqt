@@ -252,20 +252,13 @@ class Rotation2:
         """ Rotate Image and do Nearest Neighbor """
         if self.rotation_angle % 360 == 0:
             return self.inputImage
-        elif self.rotation_angle > 0:
-            if self.rotation_angle % 270 == 0:
+        else:
+            rotation_test = self.rotation_angle % 360
+            if rotation_test % 270 == 0:
                 return self.rotateImage270()
-            elif self.rotation_angle % 180 == 0:
+            elif rotation_test % 180 == 0:
                 return self.rotateImage180()
-            elif self.rotation_angle % 90 == 0:
-                return self.rotateImage90()
-        else: # self.rotation_angle < 0
-            negative_rotation_angle = np.abs(self.rotation_angle) + 180
-            if negative_rotation_angle % 270 == 0:
-                return self.rotateImage270()
-            elif negative_rotation_angle % 180 == 0:
-                return self.rotateImage180()
-            elif negative_rotation_angle % 90 == 0:
+            elif rotation_test % 90 == 0:
                 return self.rotateImage90()
 
 
