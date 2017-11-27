@@ -26,3 +26,38 @@ non-square images should be distorted.
 	because it seems more difficult to do interpolation based in the rotated
 	grid.  The known locations in the rotated grid might not fall on integer
 	value rows and columns.
+    
+    b) Scaling:
+        Implementation for scaling images was essentially the same as for
+    the homework, except we take the new values for width and height rather
+    than multipliers *fx* and *fy*. We instead calculate the *fx* and *fy* 
+    values based upon the input image's width and height and the target values.
+    
+    c) Shearing:
+        The shearing algorithm ended up being fairly straightforward, once we
+    got the hang of it. To calculate the new image width, we take the original
+    width plus the heigh multiplied by the absolute value of the multiplier *m*. 
+    The absolute value is important because negative values of *m* will still 
+    result in a wider image. For each pixel *i,j* in the new image, we calculate
+    the value *x* to which it maps back: *x* = *i* - *mj*. If this value is
+    outside the bounds of the original image, we set the value of the new pixel
+    to 0 (black). Otherwise, we set it based upon the interpolation method.
+        By default, this method works for positive values of *m* and only in
+    the vertical direction. Rather than try and make the algorithm more complex,
+    we instead transformed the image matrix into one which matches that setup.
+        For negative *m*, the issue is that the image shears from the origin.
+    Since for negative *m* pixels extend back past the origin, this result in
+    pixels being cut off, as if it had been translated. To counter this, if *m*
+    is negative, we flip the image horizontally and set *m* to be positive. This
+    results in the correct origin being used. Then after the new image is
+    calculated, we flip it back again.
+        For horizontal shearing, we could implement a different algorithm which
+    has essentially the same formulas but targeting different values:
+    *y* = *j* - *mi*. However, we can reduce it to the previously solved problem
+    by rotating the matrix before and after. When the matrix is rotated 90
+    degrees, it matches the matrix which can be sheared vertically. Then once
+    the new image is calculated, rotate it -90 degrees back to the original
+    orientation.
+        In case of both these conditions, we only need to undo them in the
+    opposite order we did them in. We chose to rotate -> flip -> calculate
+    -> flip -> rotate, but either way works.
