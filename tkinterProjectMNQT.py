@@ -242,6 +242,7 @@ class ProjectMNQT_UI:
             
             scaled_image = scale_object.resize(self.inputImage, self.scaling_x_Entry.get(), self.scaling_y_Entry.get(), self.interpVar.get())
             scaled_image_display = self.makeDisplayImage(scaled_image, self.IMAGE_SIZE)
+            self.setOutputImageShape(scaled_image.shape)
             self.outputImageLabel.configure(image=scaled_image_display)
             self.outputImageLabel.image = scaled_image_display
             
