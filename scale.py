@@ -16,11 +16,14 @@ class Scale:
         fx = float(new_width)/width
         fy = float(new_height)/height
             
-        elif interpolation == 'bilinear':
+        if interpolation == 'bilinear':
             return self.scale_bilinear(image, fx, fy)
             
         elif interpolation == 'bicubic':
             return self.scale_bicubic(image, fx, fy)
+            
+        else: # default to nearest neighbor
+            return self.scale_nearest_neighbor(image, fx, fy)
     
     def scale_nearest_neighbor(self, image, fx, fy):
         """ Scales using nearest neighbor interpolation """
