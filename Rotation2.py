@@ -166,7 +166,7 @@ class Rotation2:
 
 
     def get_4_neighborhood(self, rotation_coord_matrix):
-        """ Get surrounding input Image points"""
+        """ Get 4 surrounding input Image points"""
         N = len(rotation_coord_matrix)
         for ii in range(N):
             M = len(rotation_coord_matrix[ii])
@@ -178,6 +178,12 @@ class Rotation2:
                 ceilCol = floorCol + 1
                 #print("Currently at : xy: ", (current_row[jj].input_image_x, current_row[jj].input_image_y))
 
+                # clear out input_image_surrounding_points list
+                size_current_list = len(current_row[jj].input_image_surrounding_points)
+                for index in range(size_current_list):
+                    del current_row[jj].input_image_surrounding_points[size_current_list - index - 1]
+
+                # get 4 surrounding input image points
                 if self.isRCWithinInputImage(floorRow, floorCol):
                     intensity = self.inputImage[floorRow][floorCol]
                     current_row[jj].input_image_surrounding_points.append((floorCol, floorRow, intensity))
@@ -204,8 +210,32 @@ class Rotation2:
 
 
     def get_16_neighborhood(self, rotation_coord_matrix):
-        """ Get surrounding input Image points"""
-        return
+        """ Get 16 surrounding input Image points"""
+
+        N = len(rotation_coord_matrix)
+        for ii in range(N):
+            M = len(rotation_coord_matrix[ii])
+            current_row = rotation_coord_matrix[ii]
+            for jj in range(M):
+                floor_InpImage_Row = int(np.floor(current_row[jj].input_image_y))
+                floor_InpImage_Col = int(np.floor(current_row[jj].input_image_x))
+                start_InpImage_Row = floor_InpImage_Row - 1
+                start_InpImage_Col = floor_InpImage_Col - 1
+                # clear out input_image_surrounding_points list
+                size_current_list = len(current_row[jj].input_image_surrounding_points)
+                for index in range(size_current_list):
+                    del current_row[jj].input_image_surrounding_points[size_current_list - index - 1]
+                # get 16 surrounding input image points
+                for row_Addition in range(4):
+                    for col_Addition in range(4):
+                        cur_InpImage_Row = start_InpImage_Row + row_Addition
+                        cur_InpImage_Col = start_InpImage_Col + col_Addition
+
+                        if self.isRCWithinInputImage(cur_InpImage_Row, cur_InpImage_Col):
+                            intensity = self.inputImage[cur_InpImage_Row][cur_InpImage_Col]
+                            current_row[jj].input_image_surrounding_points.append((cur_InpImage_Col, cur_InpImage_Row, intensity))
+                        else:
+                            current_row[jj].input_image_surrounding_points.append((cur_InpImage_Col, cur_InpImage_Row, 0))
 
 
     def isRCWithinInputImage(self, row, col):
@@ -222,6 +252,22 @@ class Rotation2:
         """ Rotate Image and do Nearest Neighbor """
         if self.rotation_angle % 360 == 0:
             return self.inputImage
+        elif self.rotation_angle > 0:
+            if self.rotation_angle % 270 == 0:
+                return self.rotateImage270()
+            elif self.rotation_angle % 180 == 0:
+                return self.rotateImage180()
+            elif self.rotation_angle % 90 == 0:
+                return self.rotateImage90()
+        else: # self.rotation_angle < 0
+            negative_rotation_angle = np.abs(self.rotation_angle) + 180
+            if negative_rotation_angle % 270 == 0:
+                return self.rotateImage270()
+            elif negative_rotation_angle % 180 == 0:
+                return self.rotateImage180()
+            elif negative_rotation_angle % 90 == 0:
+                return self.rotateImage90()
+
 
         rotation_coord_matrix = self.initializeRotationCoordMatrix()
         rotated_image = self.makeEmptyRotatedImage()
@@ -242,6 +288,32 @@ class Rotation2:
 
         return rotated_image
 
+    def rotateImage270(self):
+        """ Rotate Image 270° """
+        (N, M) = self.inputImage.shape
+        rotated_image = np.zeros((M, N), np.uint8)
+        for ii in range(N):
+            for jj in range(M):
+                rotated_image[jj][N-ii-1] = self.inputImage[ii][jj]
+        return rotated_image
+
+    def rotateImage180(self):
+        """ Rotate Image 180° """
+        (N, M) = self.inputImage.shape
+        rotated_image = np.zeros((N, M), np.uint8)
+        for ii in range(N):
+            for jj in range(M):
+                rotated_image[N-ii-1][jj] = self.inputImage[ii][jj]
+        return rotated_image
+
+    def rotateImage90(self):
+        """ Rotate Image 90° """
+        (N, M) = self.inputImage.shape
+        rotated_image = np.zeros((M, N), np.uint8)
+        for ii in range(N):
+            for jj in range(M):
+                rotated_image[jj][ii] = self.inputImage[ii][jj]
+        return rotated_image
 
     def rotateImage_Bilinear(self):
         """ Rotate Image and do Bilinear Interpolation """
