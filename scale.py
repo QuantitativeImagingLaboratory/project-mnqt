@@ -3,6 +3,7 @@ Project MNQT
 Scale class
 """
 
+import math
 import numpy as np
 
 class Scale:
@@ -16,21 +17,24 @@ class Scale:
         fx = float(new_width)/width
         fy = float(new_height)/height
             
-        if interpolation == 'bilinear':
-            return self.scale_bilinear(image, fx, fy)
+        if interpolation == 'Bilinear':
+            return self.scale_bilinear(image, new_width, new_height)
             
-        elif interpolation == 'bicubic':
-            return self.scale_bicubic(image, fx, fy)
+        elif interpolation == 'Bicubic':
+            return self.scale_bicubic(image, new_width, new_height)
             
         else: # default to nearest neighbor
-            return self.scale_nearest_neighbor(image, fx, fy)
-    
-    def scale_nearest_neighbor(self, image, fx, fy):
+            return self.scale_nearest_neighbor(image, new_width, new_height)
+        
+        
+    def scale_nearest_neighbor(self, image, new_width, new_height):
         """ Scales using nearest neighbor interpolation """
         
         width, height = image.shape
-        new_width = int(width * fx)
-        new_height = int(height * fy)
+        fx = float(new_width)/width
+        fy = float(new_height)/height
+        new_width = int(new_width)
+        new_height = int(new_height)
         
         new_image = np.zeros((new_width, new_height))
         for i in range(new_width):
@@ -39,13 +43,14 @@ class Scale:
 
         return new_image
         
-        
-    def scale_bilinear(self, image, fx, fy):
+    def scale_bilinear(self, image, new_width, new_height):
         """ Scales using bilinear interpolation """
         
         width, height = image.shape
-        new_width = int(width * fx)
-        new_height = int(height * fy)
+        fx = float(new_width)/width
+        fy = float(new_height)/height
+        new_width = int(new_width)
+        new_height = int(new_height)
         
         new_image = np.zeros((new_width, new_height))
         
@@ -65,19 +70,20 @@ class Scale:
                 y2 = math.ceil(y)
                 if y2 >= height:
                     y2 = height - 1
-                
+            
                 # interpolate
-                
+                new_image[i,j] = 0
         
         return new_image
         
-        
-    def scale_bicubic(self, image, fx, fy):
+    def scale_bicubic(self, image, new_width, new_height):
         """ Scales using bicubic interpolation """
         
         width, height = image.shape
-        new_width = int(width * fx)
-        new_height = int(height * fy)
+        fx = float(new_width)/width
+        fy = float(new_height)/height
+        new_width = int(new_width)
+        new_height = int(new_height)
         
         new_image = np.zeros
         
@@ -110,6 +116,6 @@ class Scale:
                     y3 = height - 1 if y2 >= height - 1 else y2 + 1
                 
                 # interpolate
-        
+                new_image[i,j] = 0
         
         return new_image
