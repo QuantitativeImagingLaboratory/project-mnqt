@@ -8,15 +8,13 @@ import numpy as np
 class Scale:
     """ Scale class to adjust the width of an image """
     
-    def resize(self, image, fx, fy, interpolation):
+    def resize(self, image, new_width, new_height, interpolation):
         """ Calls the appropriate function to scale the image based on the interpolation method """
         
         # ensure values are floats so that the interpolation works properly
-        fx = float(fx)
-        fy = float(fy)
-        
-        if interpolation == 'nearest_neighbor':
-            return self.scale_nearest_neighbor(image, fx, fy)
+        width, height = image.shape
+        fx = float(new_width)/width
+        fy = float(new_height)/height
             
         elif interpolation == 'bilinear':
             return self.scale_bilinear(image, fx, fy)
