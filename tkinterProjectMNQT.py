@@ -170,9 +170,9 @@ class ProjectMNQT_UI:
         reflectionRadioButton.grid(row=5, column=5, columnspan=1, rowspan=1, sticky=W, padx=0, pady=20)
 
         self.reflectionVar = StringVar(self.mainframe)
-        self.reflectionVar.set("Flip Type");
+        self.reflectionVar.set("Reflection Type");
 
-        reflectionPullDown = OptionMenu(self.mainframe, self.reflectionVar, "Left Right", "Top Bottom", "Diagonal")
+        reflectionPullDown = OptionMenu(self.mainframe, self.reflectionVar, "X-axis", "Y-axis", "Y=X")
         reflectionPullDown.grid(row=5, column=6, columnspan=2, rowspan=1, sticky=W, padx=0, pady=20)
 
         ## ****** Scaling Widget ******
