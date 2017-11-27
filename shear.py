@@ -73,7 +73,7 @@ class Shear:
         for i in range(new_width):
             for j in range(new_height):
                 # x' = x + m*y -> x = i - m*y 
-                x = int(i - m*j)
+                x = i - m*j
                 
                 if x < 0:
                     x = 0
@@ -92,7 +92,7 @@ class Shear:
         for i in range(new_width):
             for j in range(new_height):
                 # x' = x + m*y -> x = x' - m*y 
-                x = int(i - m*j)
+                x = i - m*j
                 
                 if x < 0:
                     x = 0
