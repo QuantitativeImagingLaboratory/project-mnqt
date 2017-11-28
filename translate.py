@@ -10,7 +10,7 @@ class Translate:
     
     def translate(self, image, x_translation, y_translation):
         
-        width, height = image.shape
+        rows, cols = image.shape
         x_translation = int(x_translation)
         y_translation = int(y_translation)
         
@@ -27,4 +27,4 @@ class Translate:
         else:
             bottom_pad = -y_translation
         
-        return np.pad(image, ((top_pad, bottom_pad),(left_pad, right_pad)), mode='constant')[bottom_pad:height+bottom_pad, right_pad:width+right_pad]
+        return np.pad(image, ((top_pad, bottom_pad),(left_pad, right_pad)), mode='constant')[bottom_pad:cols+bottom_pad, right_pad:rows+right_pad]

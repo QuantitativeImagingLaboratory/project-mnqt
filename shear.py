@@ -47,19 +47,18 @@ class Shear:
         
     def shear_nearest_neighbor(self, image, m):
         
-        width, height = image.shape
-        new_width = int(width + abs(m)*height)
-        new_height = height
-        new_image = np.zeros((new_width, new_height))
+        rows, cols = image.shape
+        new_rows = int(rows + abs(m)*cols)
+        new_image = np.zeros((new_rows, cols))
         
-        for i in range(new_width):
-            for j in range(new_height):
-                # x' = x + m*y -> x = i - m*y 
+        for i in range(new_rows):
+            for j in range(cols):
+                # x' = x + m*y -> x = x' - m*y 
                 x = int(i - m*j)
                 
                 if x < 0:
                     new_image[i,j] = 0
-                elif x >= width:
+                elif x >= rows:
                     new_image[i,j] = 0
                 else:
                     new_image[i,j] = image[x, j]
@@ -68,38 +67,36 @@ class Shear:
         
     def shear_bilinear(self, image, m):
         
-        width, height = image.shape
-        new_width = int(width + m*height)
-        new_height = height
-        new_image = np.zeros((new_width, new_height))
+        rows, cols = image.shape
+        new_rows = int(rows + m*cols)
+        new_image = np.zeros((new_rows, cols))
         
-        for i in range(new_width):
-            for j in range(new_height):
-                # x' = x + m*y -> x = i - m*y 
-                x = i - m*j
-                
-                if x < 0:
-                    x = 0
-                if x >= width:
-                    x = width - 1
-        
-        return new_image
-        
-    def shear_bicubic(self, image, m):
-        
-        width, height = image.shape
-        new_width = int(width + m*height)
-        new_height = height
-        new_image = np.zeros((new_width, new_height))
-        
-        for i in range(new_width):
-            for j in range(new_height):
+        for i in range(new_rows):
+            for j in range(cols):
                 # x' = x + m*y -> x = x' - m*y 
                 x = i - m*j
                 
                 if x < 0:
                     x = 0
-                if x >= width:
-                    x = width - 1
+                if x >= rows:
+                    x = rows - 1
+        
+        return new_image
+        
+    def shear_bicubic(self, image, m):
+        
+        rows, cols = image.shape
+        new_rows = int(rows + m*cols)
+        new_image = np.zeros((new_rows, cols))
+        
+        for i in range(new_rows):
+            for j in range(cols):
+                # x' = x + m*y -> x = x' - m*y 
+                x = i - m*j
+                
+                if x < 0:
+                    x = 0
+                if x >= rows:
+                    x = rows - 1
         
         return new_image
