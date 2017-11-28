@@ -8,6 +8,7 @@ import numpy as np
 from Rotation2 import Rotation2
 from scale import Scale
 from shear import Shear
+from translate import Translate
 
 class ProjectMNQT_UI:
 
@@ -266,6 +267,7 @@ class ProjectMNQT_UI:
             return
 
         if self.transformationSelection.get() == 1:
+            # rotation
             rotationObject = Rotation2(self.inputImage, self.retrieveRotationAngle())
 
             rotationType = None
@@ -296,6 +298,7 @@ class ProjectMNQT_UI:
                             " interpolation.")
 
         elif self.transformationSelection.get() == 2:
+            # scale
             scale_object = Scale()
             
             scaled_image = scale_object.resize(self.inputImage, self.scaling_x_Entry.get(), self.scaling_y_Entry.get(), self.interpVar.get())
@@ -315,14 +318,28 @@ class ProjectMNQT_UI:
             self.setStatus("Scaled image using " + self.interpVar.get() + " interpolation.")
 
         elif self.transformationSelection.get() == 3:
+            # reflection
             print("Reflection Radio Button Selected")
             self.setStatus("Reflecting image.")
 
         elif self.transformationSelection.get() == 4:
-            print("Translation Radio Button Selected")
+            # translation
+            translate_object = Translate()
+            
+            translated_image = translate_object.translate(self.inputImage, self.translation_x_Entry.get(), self.translation_y_Entry.get())
+            translated_image_display = self.makeDisplayImage(translated_image, self.IMAGE_SIZE)
+            self.setOutputImageShape(translated_image.shape)
+            self.outputImageLabel.configure(image=translated_image_display)
+            self.outputImageLabel.image = translated_image_display
+            
+            self.outputImage = translated_image
+            self.currentOutFileName = self.outFileInitialName + "_translate_x_" \
+                                      + str(self.translation_x_Entry.get()) + "_y_" + str(self.translation_y_Entry.get())
+            
             self.setStatus("Translating image.")
 
         elif self.transformationSelection.get() == 5:
+            # shear
             shear_object = Shear()
             
             sheared_image = shear_object.shear(self.inputImage, self.shear_m_Entry.get(), self.shear_var.get(), self.interpVar.get())

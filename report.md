@@ -61,3 +61,13 @@ non-square images should be distorted.
         In case of both these conditions, we only need to undo them in the
     opposite order we did them in. We chose to rotate -> flip -> calculate
     -> flip -> rotate, but either way works.
+    
+    d) Translation:
+        We determine the left, right, top, and bottom padding based off of the
+    x_translation and y_translation variables. Positive values move the image
+    down and right, negative values shift it up and left. We use the np.pad
+    function to add 0s as needed based on the padding values, then take the
+    pixels [bottom_pad:height+bottom_pad, right_pad:width+right_pad].
+    The only difficult part was remembering to swap the left/right and up/down
+    order in the image. Since x is shifting the column value, it comes second.
+    Y is shifting the rows up or down, so it comes first.
