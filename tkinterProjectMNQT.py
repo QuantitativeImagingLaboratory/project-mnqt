@@ -8,6 +8,7 @@ import numpy as np
 from Rotation2 import Rotation2
 from scale import Scale
 from shear import Shear
+from Reflection import Reflection
 
 class ProjectMNQT_UI:
 
@@ -308,7 +309,7 @@ class ProjectMNQT_UI:
             if interpolationType == "Interpolation":
                 interpolationType = "Nearest_Neighbor"
             self.currentOutFileName = self.outFileInitialName + "_scale_" + interpolationType \
-                                      + "_x_" + str(self.scaling_x_Entry.get()) + "_y_" \
+                                      + "_height_" + str(self.scaling_x_Entry.get()) + "_width_" \
                                        + str(self.scaling_y_Entry.get())
 
             self.setStatus("Scaled image using " + self.interpVar.get() + " interpolation.")
@@ -317,10 +318,6 @@ class ProjectMNQT_UI:
             print("Reflection Radio Button Selected")
             self.setStatus("Reflecting image.")
 
-        elif self.transformationSelection.get() == 4:
-            print("Translation Radio Button Selected")
-            self.setStatus("Translating image.")
-            
             reflectionObject = Reflection()
 
             axis = self.reflectionVar.get()
@@ -333,6 +330,12 @@ class ProjectMNQT_UI:
                 reflected_image = self.inputImage
 
             self.displayImageOnLabel(self.outputImageLabel, reflected_image, self.IMAGE_SIZE)
+
+        elif self.transformationSelection.get() == 4:
+            print("Translation Radio Button Selected")
+            self.setStatus("Translating image.")
+            
+
 
         elif self.transformationSelection.get() == 5:
             shear_object = Shear()
