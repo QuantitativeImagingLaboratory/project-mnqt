@@ -56,15 +56,15 @@ class Shear:
         
         for i in range(new_rows):
             for j in range(cols):
-                # x' = x + m*y -> x = x' - m*y 
-                x = int(i - m*j)
+                # y' = y + m*x -> y = y' - m*x 
+                y = int(i - m*j)
                 
-                if x < 0:
+                if y < 0:
                     new_image[i,j] = 0
-                elif x >= rows:
+                elif y >= rows:
                     new_image[i,j] = 0
                 else:
-                    new_image[i,j] = image[x, j]
+                    new_image[i,j] = image[y, j]
         
         return new_image
         
@@ -116,11 +116,13 @@ class Shear:
         for i in range(new_rows):
             for j in range(cols):
                 # x' = x + m*y -> x = x' - m*y 
-                x = i - m*j
+                y = i - m*j
                 
-                if x < 0:
-                    x = 0
-                if x >= rows:
-                    x = rows - 1
+                if int(y) < 0:
+                    new_image[i,j] = 0
+                elif int(y) >= rows:
+                    new_image[i,j] = 0
+                else:
+                    pass
         
         return new_image
