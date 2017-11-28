@@ -5,6 +5,7 @@ Scale class
 
 import math
 import numpy as np
+from Interpolation import Interpolation
 
 class Scale:
     """ Scale class to adjust the rows of an image """
