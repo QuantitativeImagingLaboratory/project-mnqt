@@ -308,8 +308,8 @@ class ProjectMNQT_UI:
             if interpolationType == "Interpolation":
                 interpolationType = "Nearest_Neighbor"
             self.currentOutFileName = self.outFileInitialName + "_scale_" + interpolationType \
-                                      + "_height_" + str(self.scaling_y_Entry.get()) + "_width_" \
-                                       + str(self.scaling_x_Entry.get())
+                                      + "_x_" + str(self.scaling_x_Entry.get()) + "_y_" \
+                                       + str(self.scaling_y_Entry.get())
 
             self.setStatus("Scaled image using " + self.interpVar.get() + " interpolation.")
 
@@ -368,10 +368,8 @@ class ProjectMNQT_UI:
     def displayImageOnLabel(self, label, image, image_size):
         """ Display input image on input label"""
         displayImage = self.makeDisplayImageSquare(image, image_size)
-
         label.configure(image=displayImage)
         label.image = displayImage
-
 
     def makeDisplayImage(self, cv2_image, shape):
         disp_im = Image.fromarray(cv2_image)
@@ -393,7 +391,7 @@ class ProjectMNQT_UI:
             difference = N - M
             left_offset = np.int(np.round(difference/2))
             right_offset = N - (difference - left_offset)
-            print("left_offset: ", left_offset, " right_offset: ", right_offset)
+            #print("left_offset: ", left_offset, " right_offset: ", right_offset)
             squared_image = np.zeros((N, N), np.uint8)
             for ii in range(N):
                 for jj in range(N):
@@ -401,14 +399,14 @@ class ProjectMNQT_UI:
                         squared_image[ii][jj] = 255
                     else:
                         squared_image[ii][jj] = image[ii][jj - left_offset]
-            print("N > M: Squared Image shape: ", squared_image.shape)
+            #print("N > M: Squared Image shape: ", squared_image.shape)
             return squared_image
 
         else: # image is wider than it is long, M > N
             difference = M - N
             top_offset = np.int(np.round(difference/2))
             bot_offset = M - (difference - top_offset)
-            print("top_offset: ", top_offset, " bot_offset: ", bot_offset)
+            #print("top_offset: ", top_offset, " bot_offset: ", bot_offset)
             squared_image = np.zeros((M, M), np.uint8)
             for ii in range(M):
                 for jj in range(M):
@@ -416,7 +414,7 @@ class ProjectMNQT_UI:
                         squared_image[ii][jj] = 255
                     else:
                         squared_image[ii][jj] = image[ii - top_offset][jj]
-            print("N < M: Squared Image shape: ", squared_image.shape)
+            #print("N < M: Squared Image shape: ", squared_image.shape)
             return squared_image
         # N and M are None?
         print("Error making square image.")
