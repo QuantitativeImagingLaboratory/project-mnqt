@@ -281,9 +281,8 @@ class ProjectMNQT_UI:
                 rotationType = "Nearest Neighbor"
 
             self.setOutputImageShape(rotated_image.shape)
-            rotated_image_display = self.makeDisplayImage(rotated_image, self.IMAGE_SIZE)
-            self.outputImageLabel.configure(image=rotated_image_display)
-            self.outputImageLabel.image = rotated_image_display
+
+            self.displayImageOnLabel(self.outputImageLabel, rotated_image, self.IMAGE_SIZE)
 
             self.outputImage = rotated_image
             interpolationType = self.interpVar.get()
@@ -299,10 +298,10 @@ class ProjectMNQT_UI:
             scale_object = Scale()
             
             scaled_image = scale_object.resize(self.inputImage, self.scaling_x_Entry.get(), self.scaling_y_Entry.get(), self.interpVar.get())
-            scaled_image_display = self.makeDisplayImage(scaled_image, self.IMAGE_SIZE)
+
+            self.displayImageOnLabel(self.outputImageLabel, scaled_image, self.IMAGE_SIZE)
+
             self.setOutputImageShape(scaled_image.shape)
-            self.outputImageLabel.configure(image=scaled_image_display)
-            self.outputImageLabel.image = scaled_image_display
 
             self.outputImage = scaled_image
             interpolationType = self.interpVar.get()
@@ -326,10 +325,10 @@ class ProjectMNQT_UI:
             shear_object = Shear()
             
             sheared_image = shear_object.shear(self.inputImage, self.shear_m_Entry.get(), self.shear_var.get(), self.interpVar.get())
-            sheared_image_display = self.makeDisplayImage(sheared_image, self.IMAGE_SIZE)
+
+            self.displayImageOnLabel(self.outputImageLabel, sheared_image, self.IMAGE_SIZE)
+
             self.setOutputImageShape(sheared_image.shape)
-            self.outputImageLabel.configure(image=sheared_image_display)
-            self.outputImageLabel.image = sheared_image_display
 
             self.outputImage = sheared_image
             interpolationType = self.interpVar.get()
@@ -368,7 +367,7 @@ class ProjectMNQT_UI:
 
     def displayImageOnLabel(self, label, image, image_size):
         """ Display input image on input label"""
-        displayImage = self.makeDisplayImage(image, image_size)
+        displayImage = self.makeDisplayImageSquare(image, image_size)
 
         label.configure(image=displayImage)
         label.image = displayImage
@@ -379,6 +378,48 @@ class ProjectMNQT_UI:
         disp_im = disp_im.resize(shape, Image.ANTIALIAS)
         return ImageTk.PhotoImage(disp_im)
 
+    def makeDisplayImageSquare(self, cv2_image, shape):
+        square_image = self.makeImageSquare(cv2_image)
+        disp_im = Image.fromarray(square_image)
+        disp_im = disp_im.resize(shape, Image.ANTIALIAS)
+        return ImageTk.PhotoImage(disp_im)
+
+    def makeImageSquare(self, image):
+        """ Return square image from non-square image if necessary """
+        (N, M) = image.shape
+        if N == M:
+            return image
+        elif N > M: # image is longer than it is wide
+            difference = N - M
+            left_offset = np.int(np.round(difference/2))
+            right_offset = N - (difference - left_offset)
+            print("left_offset: ", left_offset, " right_offset: ", right_offset)
+            squared_image = np.zeros((N, N), np.uint8)
+            for ii in range(N):
+                for jj in range(N):
+                    if jj < left_offset or jj >= right_offset:
+                        squared_image[ii][jj] = 255
+                    else:
+                        squared_image[ii][jj] = image[ii][jj - left_offset]
+            print("N > M: Squared Image shape: ", squared_image.shape)
+            return squared_image
+
+        else: # image is wider than it is long, M > N
+            difference = M - N
+            top_offset = np.int(np.round(difference/2))
+            bot_offset = M - (difference - top_offset)
+            print("top_offset: ", top_offset, " bot_offset: ", bot_offset)
+            squared_image = np.zeros((M, M), np.uint8)
+            for ii in range(M):
+                for jj in range(M):
+                    if ii < top_offset or ii >= bot_offset:
+                        squared_image[ii][jj] = 255
+                    else:
+                        squared_image[ii][jj] = image[ii - top_offset][jj]
+            print("N < M: Squared Image shape: ", squared_image.shape)
+            return squared_image
+        # N and M are None?
+        print("Error making square image.")
 
     def doNothing(self):
         print("Not implemented yet.")
