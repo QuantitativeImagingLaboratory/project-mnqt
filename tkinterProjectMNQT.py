@@ -13,6 +13,11 @@ class ProjectMNQT_UI:
 
     # cv2 images
     inputImage = None
+    outputImage = None
+
+    # file names
+    outFileInitialName = ""
+    currentOutFileName = ""
 
     # gui labels
     inputImageLabel = None
@@ -72,6 +77,9 @@ class ProjectMNQT_UI:
 
         quitButton = Button(toolbar, text="Quit", command=quit)
         quitButton.pack(side=RIGHT, padx=20, pady=20)
+
+        saveButton = Button(toolbar, text="Save Output Image", command=self.file_save)
+        saveButton.pack(side=RIGHT, padx=20, pady=20)
 
         toolbar.pack(side=TOP, fill=X)
 
@@ -202,7 +210,7 @@ class ProjectMNQT_UI:
         self.interpVar = StringVar(self.mainframe)
         self.interpVar.set("Interpolation");
 
-        interpolationPullDown = OptionMenu(self.mainframe, self.interpVar, "Nearest Neighbor", "Bilinear", "Bicubic")
+        interpolationPullDown = OptionMenu(self.mainframe, self.interpVar, "Nearest_Neighbor", "Bilinear", "Bicubic")
         interpolationPullDown.grid(row=8, column=2, columnspan=2, rowspan=1, sticky=W, padx=0, pady=20)
 
 
@@ -212,6 +220,11 @@ class ProjectMNQT_UI:
 
     def getInputImage(self):
         filename = filedialog.askopenfilename()
+        if filename is None:
+            self.setStatus("No input file chosen in filedialog.")
+            return
+
+        self.outFileInitialName = self.getInitialOutputFilename(filename)
 
         self.inputImage = cv2.imread(filename)
         self.inputImage = cv2.cvtColor(self.inputImage, cv2.COLOR_RGB2GRAY)
@@ -224,6 +237,28 @@ class ProjectMNQT_UI:
         self.inputImageShapeLabel.text = image_shape_str
 
         self.setStatus("Loaded input image: " + filename)
+
+    def getInitialOutputFilename(self, filenameWithPath):
+        """ Return initial output file name """
+        splitString = filenameWithPath.split("/")
+        lastName = splitString[len(splitString) - 1]
+        fileSplitString = lastName.split(".")
+        fileString = fileSplitString[0]
+        if fileString == "":
+            fileString = "UnknownFile"
+        fileString = fileString.replace(" ", "_")
+        return fileString
+
+    def file_save(self):
+        self.currentOutFileName = self.currentOutFileName.replace(".", "p")
+        #print(self.currentOutFileName)
+        outFileName = filedialog.asksaveasfilename(title=("Save Output Image"), initialfile=self.currentOutFileName,
+                                                   defaultextension=".png")
+        if outFileName is None:
+            self.setStatus("No save file chosen.")
+            return
+
+        cv2.imwrite(outFileName, self.outputImage)
 
     def runTransformation(self):
         if self.inputImage is None:
@@ -250,6 +285,12 @@ class ProjectMNQT_UI:
             self.outputImageLabel.configure(image=rotated_image_display)
             self.outputImageLabel.image = rotated_image_display
 
+            self.outputImage = rotated_image
+            interpolationType = self.interpVar.get()
+            if interpolationType == "Interpolation":
+                interpolationType = "Nearest_Neighbor"
+            self.currentOutFileName = self.outFileInitialName + "_rotation_" + interpolationType \
+                                      + "_" + str(self.retrieveRotationAngle())
 
             self.setStatus("Rotated image " + str(self.retrieveRotationAngle()) + "° using " + rotationType +
                             " interpolation.")
@@ -262,7 +303,15 @@ class ProjectMNQT_UI:
             self.setOutputImageShape(scaled_image.shape)
             self.outputImageLabel.configure(image=scaled_image_display)
             self.outputImageLabel.image = scaled_image_display
-            
+
+            self.outputImage = scaled_image
+            interpolationType = self.interpVar.get()
+            if interpolationType == "Interpolation":
+                interpolationType = "Nearest_Neighbor"
+            self.currentOutFileName = self.outFileInitialName + "_scale_" + interpolationType \
+                                      + "_height_" + str(self.scaling_y_Entry.get()) + "_width_" \
+                                       + str(self.scaling_x_Entry.get())
+
             self.setStatus("Scaled image using " + self.interpVar.get() + " interpolation.")
 
         elif self.transformationSelection.get() == 3:
@@ -281,7 +330,15 @@ class ProjectMNQT_UI:
             self.setOutputImageShape(sheared_image.shape)
             self.outputImageLabel.configure(image=sheared_image_display)
             self.outputImageLabel.image = sheared_image_display
-            
+
+            self.outputImage = sheared_image
+            interpolationType = self.interpVar.get()
+            if interpolationType == "Interpolation":
+                interpolationType = "Nearest_Neighbor"
+            self.currentOutFileName = self.outFileInitialName + "_shear_" + interpolationType \
+                                      + "_m_" + str(self.shear_m_Entry.get()) + "_type_" \
+                                      + str(self.shear_var.get())
+
             self.setStatus("Sheared image using " + self.interpVar.get() + " interpolation.")
 
         else:
