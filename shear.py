@@ -6,6 +6,8 @@ Shear class
 import math
 import numpy as np
 
+from Reflection import Reflection
+
 class Shear:
     """ Shear class to displace image horizontally or vertically proportionally to its distance from the origin """
     
@@ -15,14 +17,15 @@ class Shear:
         m = float(m)
         is_horizontal = direction == "Horizontal"
         is_m_negative = m < 0
+        reflector = Reflection()
         
         # shears vertically by default, if horizontal just rotate by 90 then rotate back after
         if is_horizontal:
-            image = np.rot90(image)
+            image = reflector.reflectOnAxisY(image).T
             
         # if m is negative, flip image to set the origin properly then flip back after
         if is_m_negative:
-            image = np.fliplr(image)
+            image = reflector.reflectOnAxisY(image)
             m = -m
             
         if interpolation == 'Bilinear':
@@ -35,10 +38,10 @@ class Shear:
             new_image = self.shear_nearest_neighbor(image, m)
             
         if is_m_negative:
-            new_image = np.fliplr(new_image)
+            new_image = reflector.reflectOnAxisY(new_image)
                     
         if is_horizontal:
-            new_image = np.rot90(new_image, -1)
+            new_image = reflector.reflectOnAxisY(new_image.T)
                     
         return new_image
         
