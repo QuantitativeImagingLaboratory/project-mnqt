@@ -42,31 +42,42 @@ class Scale:
     def scale_bilinear(self, image, new_rows, new_cols):
         """ Scales using bilinear interpolation """
         
-        rows, cols = image.shape
-        fx = float(new_rows)/rows
-        fy = float(new_cols)/cols
+        interpol = Interpolation()
         
-        new_image = np.zeros((new_rows, new_cols))
+        width, height = image.shape
+        fx = float(new_width)/width
+        fy = float(new_height)/height
         
-        for i in range(new_rows):
-            for j in range(new_cols):
-                x = i/fx
-                y = j/fy
+        new_image = np.zeros((new_width, new_height))
+        
+        for i in range(new_width):
+            for j in range(new_height):
+                x = j/fx
+                y = i/fy
                 
                 # find 4 nearest neighbors
                 # ex: x = 20.5, y = 33.3 -> x1 = 20, x2 = 21, y1 = 33, y2 = 34
                 x1 = math.floor(x)
                 x2 = math.ceil(x)
-                if x2 >= rows:
-                    x2 = rows - 1
+                if x2 >= width:
+                    x2 = width - 1
                     
                 y1 = math.floor(y)
                 y2 = math.ceil(y)
-                if y2 >= cols:
-                    y2 = cols - 1
+                if y2 >= height:
+                    y2 = height - 1
             
                 # interpolate
-                new_image[i,j] = 0
+                #new_image[i,j] = 0
+
+                                            #          _C O L S__
+                                            #           x1     dX     x2
+                q11 = image[y1,x1]          #R      y1| q11    r1    q21
+                q12 = image[y1,x1]          #O      dY|        P
+                q21 = image[y2,x2]          #W        |
+                q22 = image[y2,x2]          #S      y2| q12    r2    q22
+
+                new_image[i, j] = interpol.bilinear_interpolation((x1, q11, q12), (x2, q21, q22), y2, y1, (x, y))
         
         return new_image
         
