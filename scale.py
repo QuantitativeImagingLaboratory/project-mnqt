@@ -45,14 +45,14 @@ class Scale:
         
         interpol = Interpolation()
         
-        width, height = image.shape
-        fx = float(new_width)/width
-        fy = float(new_height)/height
+        rows, cols = image.shape
+        fx = float(new_rows)/rows
+        fy = float(new_cols)/cols
         
-        new_image = np.zeros((new_width, new_height))
+        new_image = np.zeros((new_rows, new_cols))
         
-        for i in range(new_width):
-            for j in range(new_height):
+        for i in range(new_rows):
+            for j in range(new_cols):
                 x = j/fx
                 y = i/fy
                 
@@ -60,13 +60,13 @@ class Scale:
                 # ex: x = 20.5, y = 33.3 -> x1 = 20, x2 = 21, y1 = 33, y2 = 34
                 x1 = math.floor(x)
                 x2 = math.ceil(x)
-                if x2 >= width:
-                    x2 = width - 1
+                if x2 >= rows:
+                    x2 = rows - 1
                     
                 y1 = math.floor(y)
                 y2 = math.ceil(y)
-                if y2 >= height:
-                    y2 = height - 1
+                if y2 >= cols:
+                    y2 = cols - 1
             
                 # interpolate
                 #new_image[i,j] = 0
