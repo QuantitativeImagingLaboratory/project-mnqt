@@ -28,3 +28,4 @@ class Reflection:
                 new_image[x, y] = image[x, col - y - 1]
 
         return new_image
+

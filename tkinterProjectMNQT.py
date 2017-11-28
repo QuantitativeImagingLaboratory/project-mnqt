@@ -322,7 +322,7 @@ class ProjectMNQT_UI:
 
             axis = self.reflectionVar.get()
 
-            if axis == "X-axis":
+            if axis == "X-axis" or axis == "Reflection Type":
                 reflected_image = reflectionObject.reflectOnAxisX(self.inputImage)
             elif axis == "Y-axis":
                 reflected_image = reflectionObject.reflectOnAxisY(self.inputImage)
@@ -330,6 +330,17 @@ class ProjectMNQT_UI:
                 reflected_image = self.inputImage
 
             self.displayImageOnLabel(self.outputImageLabel, reflected_image, self.IMAGE_SIZE)
+
+            self.setOutputImageShape(reflected_image.shape)
+
+            self.outputImage = reflected_image
+            reflectionType = self.reflectionVar.get()
+            if reflectionType == "Reflection Type":
+                reflectionType = "X-axis"
+
+            self.currentOutFileName = self.outFileInitialName + "_reflected_on_" + reflectionType
+
+            self.setStatus("Reflected Image on " + reflectionType + ".")
 
         elif self.transformationSelection.get() == 4:
             print("Translation Radio Button Selected")
