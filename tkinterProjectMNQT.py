@@ -320,6 +320,19 @@ class ProjectMNQT_UI:
         elif self.transformationSelection.get() == 4:
             print("Translation Radio Button Selected")
             self.setStatus("Translating image.")
+            
+            reflectionObject = Reflection()
+
+            axis = self.reflectionVar.get()
+
+            if axis == "X-axis":
+                reflected_image = reflectionObject.reflectOnAxisX(self.inputImage)
+            elif axis == "Y-axis":
+                reflected_image = reflectionObject.reflectOnAxisY(self.inputImage)
+            else:
+                reflected_image = self.inputImage
+
+            self.displayImageOnLabel(self.outputImageLabel, reflected_image, self.IMAGE_SIZE)
 
         elif self.transformationSelection.get() == 5:
             shear_object = Shear()
