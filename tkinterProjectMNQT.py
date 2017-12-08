@@ -316,7 +316,7 @@ class ProjectMNQT_UI:
                                       + "_height_" + str(self.scaling_x_Entry.get()) + "_width_" \
                                        + str(self.scaling_y_Entry.get())
 
-            self.setStatus("Scaled image using " + self.interpVar.get() + " interpolation.")
+            self.setStatus("Scaled image using " + interpolationType + " interpolation.")
 
         elif self.transformationSelection.get() == 3:
             # reflection
