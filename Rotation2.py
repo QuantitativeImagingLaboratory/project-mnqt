@@ -4,6 +4,8 @@
 #
 #
 import numpy as np
+from Interpolation import Interpolation
+
 
 class RotationCoord:
     """Coordinate in Rotated Domain class, input image coordinates could be fractional """
@@ -310,8 +312,66 @@ class Rotation2:
 
     def rotateImage_Bilinear(self):
         """ Rotate Image and do Bilinear Interpolation """
-        rotated_image = self.rotateImage_NearestNeighbor()
+        if self.rotation_angle % 360 == 0:
+            return self.inputImage
+        else:
+            rotation_test = self.rotation_angle % 360
+            if rotation_test % 270 == 0:
+                return self.rotateImage270()
+            elif rotation_test % 180 == 0:
+                return self.rotateImage180()
+            elif rotation_test % 90 == 0:
+                return self.rotateImage90()
+
+
+        rotation_coord_matrix = self.initializeRotationCoordMatrix()
+        self.get_4_neighborhood(rotation_coord_matrix)  # Get the 4 neighboring pixels of the original image
+        rotated_image = self.makeEmptyRotatedImage()
+
+
+        interpol = Interpolation() # interpolation object
+
+        #print(" Doing bilinear interpolation: ")
+        N = len(rotation_coord_matrix)
+        for ii in range(N):
+            M = len(rotation_coord_matrix[ii])
+            curr_row = rotation_coord_matrix[ii]
+            for jj in range(M):
+                inputImage_row = int(np.round(curr_row[jj].input_image_y))
+                inputImage_col = int(np.round(curr_row[jj].input_image_x))
+
+                #print("current rotation matrix info: ", curr_row[jj])
+
+                intensity = 0
+                if self.isRCWithinInputImage(inputImage_row, inputImage_col):
+                    # SurroundingPoints: [(7, -8, 0), (8, -8, 0), (7, -7, 0), (8, -7, 0)]
+                    # Bilinear Interpolation from Qaem                           #             _C O L S__
+                                                                                 #             leftX     dX        rightX
+                    q11 = curr_row[jj].input_image_surrounding_points[0][2]      # R      topY| q11       r1        q21
+                    q12 = curr_row[jj].input_image_surrounding_points[2][2]      # O        dY|           P
+                    q21 = curr_row[jj].input_image_surrounding_points[1][2]      # W          |
+                    q22 = curr_row[jj].input_image_surrounding_points[3][2]      # S   bottomY| q12       r2        q22
+
+                    leftX   = curr_row[jj].input_image_surrounding_points[0][0]
+                    rightX  = curr_row[jj].input_image_surrounding_points[1][0]
+                    topY    = curr_row[jj].input_image_surrounding_points[0][1]
+                    bottomY = curr_row[jj].input_image_surrounding_points[2][1]
+
+                    dx = curr_row[jj].input_image_x
+                    dy = curr_row[jj].input_image_y
+
+                    #print("q11 = ", q11, " q12 = ", q12, " q21 = ", q21, " q22 = ", q22)
+                    #print("leftX = ", leftX, " rightX = ", rightX, " topY = ", topY, " bottomY = ", bottomY)
+                    #print("dx = ", dx, " dy = ", dy)
+
+                    intensity = interpol.bilinear_interpolation((leftX, q11, q12), (rightX, q21, q22), topY, bottomY,
+                                                                (dy, dx))
+                    #print("output intensity = ", intensity)
+
+                rotated_image[ii][jj] = np.round(intensity)
+
         return rotated_image
+
 
     def rotateImage_Bicubic(self):
         """ Rotate Image and do Bicubic Interpolation"""
