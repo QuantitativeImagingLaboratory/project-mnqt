@@ -40,45 +40,57 @@ class Scale:
 
         return new_image
         
+  def scale_nearest_neighbor(self, image, new_rows, new_cols):
+        """ Scales using nearest neighbor interpolation """
+        
+        rows, cols = image.shape
+        fxscale = float(new_cols)/cols
+        fyscale = float(new_rows)/rows
+        
+        new_image = np.zeros((new_rows, new_cols))
+        for ridx in range(new_rows):
+            for cidx in range(new_cols):
+                new_image[ridx, cidx] = image[int(ridx/fyscale), int(cidx/fxscale)]
+
+        return new_image
+        
     def scale_bilinear(self, image, new_rows, new_cols):
         """ Scales using bilinear interpolation """
         
         interpol = Interpolation()
         
         rows, cols = image.shape
-        fx = float(new_cols)/cols
-        fy = float(new_rows)/rows
+        fxscale = float(new_cols)/cols
+        fyscale = float(new_rows)/rows
         
         new_image = np.zeros((new_rows, new_cols))
         
-        for i in range(new_rows):
-            for j in range(new_cols):
-                x = j/fx
-                y = i/fy
+        for ridx in range(new_rows):
+            for cidx in range(new_cols):
+
+                # The points on original image
+                dx = cidx/fxscale
+                dy = ridx/fyscale
                 
                 # find 4 nearest neighbors
                 # ex: x = 20.5, y = 33.3 -> x1 = 20, x2 = 21, y1 = 33, y2 = 34
-                x1 = math.floor(x)
-                x2 = math.ceil(x)
-                if x2 >= cols:
-                    x2 = cols - 1
+                leftX = math.floor(dx)
+                rightX = math.ceil(dx)
+                if rightX >= cols:
+                    rightX = cols - 1
                     
-                y1 = math.floor(y)
-                y2 = math.ceil(y)
-                if y2 >= rows:
-                    y2 = rows - 1
-            
-                # interpolate
-                #new_image[i,j] = 0
+                topY = math.floor(dy)
+                bottomY = math.ceil(dy)
+                if bottomY >= rows:
+                    bottomY = rows - 1
+                                                #          _C O L S__
+                                                #             leftX     dX        rightX
+                q11 = image[topY,leftX]         #R      topY| q11       r1        q21
+                q12 = image[bottomY,leftX]      #O        dY|           P
+                q21 = image[topY,rightX]        #W          |
+                q22 = image[bottomY,rightX]     #S   bottomY| q12       r2        q22
 
-                                            #          _C O L S__
-                                            #           x1     dX     x2
-                q11 = image[y1,x1]          #R      y1| q11    r1    q21
-                q12 = image[y1,x1]          #O      dY|        P
-                q21 = image[y2,x2]          #W        |
-                q22 = image[y2,x2]          #S      y2| q12    r2    q22
-
-                new_image[i, j] = interpol.bilinear_interpolation((x1, q11, q12), (x2, q21, q22), y2, y1, (x, y))
+                new_image[ridx, cidx] = interpol.bilinear_interpolation((leftX, q11, q12), (rightX, q21, q22), topY, bottomY, (dy, dx))
         
         return new_image
         
