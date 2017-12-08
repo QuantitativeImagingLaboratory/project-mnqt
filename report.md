@@ -21,7 +21,11 @@ non-square images should be distorted.
 	rotated back to the original image pixel grid to find an interpolation
 	value.  For the bilinear interpolation, we created an array of the 4
 	surrounding input image pixels. For the bicubic interpolation, we created
-	an array of the 16 surrounding input image pixels.
+	an array of the 4 surrounding input image pixels but bicubic interpolation 
+    uses 16 inputs to perform the calculations. Rest of the 12 inputs come from
+    derivates. We find X derivative, Y derivative and cross derivative for each 
+    of the 4 neighbouring pixels. Then those 16 coefficients are used in the formula 
+    to get the interpolated value.
 		The first implementation of image rotation ran into problems
 	because it seems more difficult to do interpolation based in the rotated
 	grid.  The known locations in the rotated grid might not fall on integer
