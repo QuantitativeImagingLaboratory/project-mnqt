@@ -20,7 +20,7 @@ class Bicubic_Interpolation:
                       [-6, 6, 6, -6, -4, -2, 4, 2, -3, 3, -3, 3, -2, -1, -2, -1],
                       [4, -4, -4, 4, 2, 2, -2, -2, 2, -2, 2, -2, 1, 1, 1, 1]])
 
-    def perform_interpolation(self, image, fx, fy):
+    def perform_scaling_interpolation(self, image, fx, fy):
         height_original = image.shape[0]
         width_original = image.shape[1]
 
