@@ -40,7 +40,7 @@ class Scale:
 
         return new_image
         
-  def scale_nearest_neighbor(self, image, new_rows, new_cols):
+    def scale_nearest_neighbor(self, image, new_rows, new_cols):
         """ Scales using nearest neighbor interpolation """
         
         rows, cols = image.shape
