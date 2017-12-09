@@ -393,8 +393,13 @@ class ProjectMNQT_UI:
         elif self.transformationSelection.get() == 5:
             # shear
             shear_object = Shear()
+
+            try:
+                m_entry = float(self.shear_m_Entry.get())
+            except ValueError:
+                m_entry = 0.0
             
-            sheared_image = shear_object.shear(self.inputImage, self.shear_m_Entry.get(), self.shear_var.get(), self.interpVar.get())
+            sheared_image = shear_object.shear(self.inputImage, m_entry, self.shear_var.get(), self.interpVar.get())
 
             self.displayImageOnLabel(self.outputImageLabel, sheared_image, self.IMAGE_SIZE)
 
@@ -408,7 +413,7 @@ class ProjectMNQT_UI:
                                       + "_m_" + str(self.shear_m_Entry.get()) + "_type_" \
                                       + str(self.shear_var.get())
 
-            self.setStatus("Sheared image using " + self.interpVar.get() + " interpolation.")
+            self.setStatus("Sheared image using " + self.interpVar.get() + " interpolation with m = " + str(m_entry))
 
         else:
             self.setStatus("No image geometric transformation is selected.")
