@@ -175,7 +175,7 @@ class ProjectMNQT_UI:
         self.reflectionVar = StringVar(self.mainframe)
         self.reflectionVar.set("Reflection Type");
 
-        reflectionPullDown = OptionMenu(self.mainframe, self.reflectionVar, "X-axis", "Y-axis", "Y=X")
+        reflectionPullDown = OptionMenu(self.mainframe, self.reflectionVar, "X-axis", "Y-axis")
         reflectionPullDown.grid(row=5, column=6, columnspan=2, rowspan=1, sticky=W, padx=0, pady=20)
 
         ## ****** Translation Widget ******
@@ -301,8 +301,18 @@ class ProjectMNQT_UI:
         elif self.transformationSelection.get() == 2:
             # scale
             scale_object = Scale()
+
+            (N, M) = self.inputImage.shape
+            scale_x = N
+            if self.scaling_x_Entry.get() != "Height":
+                scale_x = int(np.round(float(self.scaling_x_Entry.get())))
+
+            scale_y = M
+            if self.scaling_y_Entry.get() != "Width":
+                scale_y = int(np.round(float(self.scaling_x_Entry.get())))
+
             
-            scaled_image = scale_object.resize(self.inputImage, self.scaling_x_Entry.get(), self.scaling_y_Entry.get(), self.interpVar.get())
+            scaled_image = scale_object.resize(self.inputImage, scale_x, scale_y, self.interpVar.get())
 
             self.displayImageOnLabel(self.outputImageLabel, scaled_image, self.IMAGE_SIZE)
 
@@ -316,7 +326,8 @@ class ProjectMNQT_UI:
                                       + "_height_" + str(self.scaling_x_Entry.get()) + "_width_" \
                                        + str(self.scaling_y_Entry.get())
 
-            self.setStatus("Scaled image using " + interpolationType + " interpolation.")
+            self.setStatus("Scaled image using " + interpolationType + " interpolation to: " + str(scale_x) \
+                                   + " x " + str(scale_y) + " .")
 
         elif self.transformationSelection.get() == 3:
             # reflection
@@ -353,11 +364,11 @@ class ProjectMNQT_UI:
 
             translation_x = 0
             if self.translation_x_Entry.get() != "x:px":
-                translation_x = str(int(np.round(float(self.translation_x_Entry.get()))))
+                translation_x = int(np.round(float(self.translation_x_Entry.get())))
 
             translation_y = 0
             if self.translation_y_Entry.get() != "y:px":
-                translation_y = str(int(np.round(float(self.translation_y_Entry.get()))))
+                translation_y = int(np.round(float(self.translation_y_Entry.get())))
 
             
             translated_image = translate_object.translate(self.inputImage, translation_x, translation_y)
