@@ -96,8 +96,8 @@ class Shear:
                                                 #          _C O L S__
                                                 #           x1     dX     x2
                     q11 = image[y1,x1]          #R      y1| q11    r1    q21
-                    q12 = image[y1,x1]          #O      dY|        P
-                    q21 = image[y2,x2]          #W        |
+                    q12 = image[y1,x2]          #O      dY|        P
+                    q21 = image[y2,x1]          #W        |
                     q22 = image[y2,x2]          #S      y2| q12    r2    q22
 
                     new_image[i, j] = np.round(interpol.bilinear_interpolation((x1, q11, q12), (x2, q21, q22), y2, y1, (x, y)))
@@ -134,8 +134,8 @@ class Shear:
                                             #          _C O L S__
                                             #           x1     dX     x2
                     q11 = (y1,x1)           #R      y1| q11    r1    q21
-                    q12 = (y1,x1)           #O      dY|        P
-                    q21 = (y2,x2)           #W        |
+                    q12 = (y1,x2)           #O      dY|        P
+                    q21 = (y2,x1)           #W        |
                     q22 = (y2,x2)           #S      y2| q12    r2    q22
                         
                     h  = -((x - math.floor(x)) - 1)
