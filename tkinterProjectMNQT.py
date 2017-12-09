@@ -303,15 +303,18 @@ class ProjectMNQT_UI:
             scale_object = Scale()
 
             (N, M) = self.inputImage.shape
-            scale_x = N
-            if self.scaling_x_Entry.get() != "Height":
+
+            try:
                 scale_x = int(np.round(float(self.scaling_x_Entry.get())))
+            except ValueError:
+                scale_x = N
 
-            scale_y = M
-            if self.scaling_y_Entry.get() != "Width":
+            try:
                 scale_y = int(np.round(float(self.scaling_x_Entry.get())))
+            except ValueError:
+                scale_y = M
 
-            
+
             scaled_image = scale_object.resize(self.inputImage, scale_x, scale_y, self.interpVar.get())
 
             self.displayImageOnLabel(self.outputImageLabel, scaled_image, self.IMAGE_SIZE)
@@ -362,13 +365,15 @@ class ProjectMNQT_UI:
             # translation
             translate_object = Translate()
 
-            translation_x = 0
-            if self.translation_x_Entry.get() != "x:px":
+            try:
                 translation_x = int(np.round(float(self.translation_x_Entry.get())))
+            except ValueError:
+                translation_x = 0
 
-            translation_y = 0
-            if self.translation_y_Entry.get() != "y:px":
+            try:
                 translation_y = int(np.round(float(self.translation_y_Entry.get())))
+            except ValueError:
+                translation_y = 0
 
             
             translated_image = translate_object.translate(self.inputImage, translation_x, translation_y)
