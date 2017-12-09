@@ -310,7 +310,7 @@ class ProjectMNQT_UI:
                 scale_x = N
 
             try:
-                scale_y = int(np.round(float(self.scaling_x_Entry.get())))
+                scale_y = int(np.round(float(self.scaling_y_Entry.get())))
             except ValueError:
                 scale_y = M
 
