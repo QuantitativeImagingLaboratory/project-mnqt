@@ -216,9 +216,6 @@ class Bicubic_Interpolation:
             h_value = (1 - h) ** (h_temp)
             w_h_multiply = np.multiply(w_value, h_value)
             alpha_w_h = np.multiply(alpha[count], w_h_multiply)
-            # print(w, h, w_temp, h_temp, w_h_multiply, alpha_w_h)
-            # w_h_multiply = w_value*h_value*alpha[count]
-            # alpha_w_h = w_h_multiply
             interpolated_intensity += alpha_w_h
 
         return interpolated_intensity
