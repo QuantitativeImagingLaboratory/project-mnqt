@@ -350,8 +350,17 @@ class ProjectMNQT_UI:
         elif self.transformationSelection.get() == 4:
             # translation
             translate_object = Translate()
+
+            translation_x = 0
+            if self.translation_x_Entry.get() != "x:px":
+                translation_x = str(int(np.round(float(self.translation_x_Entry.get()))))
+
+            translation_y = 0
+            if self.translation_y_Entry.get() != "y:px":
+                translation_y = str(int(np.round(float(self.translation_y_Entry.get()))))
+
             
-            translated_image = translate_object.translate(self.inputImage, self.translation_x_Entry.get(), self.translation_y_Entry.get())
+            translated_image = translate_object.translate(self.inputImage, translation_x, translation_y)
             translated_image_display = self.makeDisplayImage(translated_image, self.IMAGE_SIZE)
             self.setOutputImageShape(translated_image.shape)
             self.outputImageLabel.configure(image=translated_image_display)
@@ -359,9 +368,9 @@ class ProjectMNQT_UI:
             
             self.outputImage = translated_image
             self.currentOutFileName = self.outFileInitialName + "_translate_x_" \
-                                      + str(self.translation_x_Entry.get()) + "_y_" + str(self.translation_y_Entry.get())
+                                      + str(translation_x) + "_y_" + str(translation_y)
             
-            self.setStatus("Translating image.")
+            self.setStatus("Translating image: x: " + str(translation_x) + " , y: " + str(translation_y))
             
 
 
