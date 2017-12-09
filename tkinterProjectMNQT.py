@@ -406,14 +406,20 @@ class ProjectMNQT_UI:
             self.setOutputImageShape(sheared_image.shape)
 
             self.outputImage = sheared_image
+
             interpolationType = self.interpVar.get()
             if interpolationType == "Interpolation":
                 interpolationType = "Nearest_Neighbor"
-            self.currentOutFileName = self.outFileInitialName + "_shear_" + interpolationType \
-                                      + "_m_" + str(self.shear_m_Entry.get()) + "_type_" \
-                                      + str(self.shear_var.get())
 
-            self.setStatus("Sheared image using " + self.interpVar.get() + " interpolation with m = " + str(m_entry))
+            shearType = self.shear_var.get()
+            if shearType == "Shear Type":
+                shearType = "Vertical"
+            self.currentOutFileName = self.outFileInitialName + "_shear_" + interpolationType \
+                                      + "_m_" + str(m_entry) + "_type_" \
+                                      + str(shearType)
+
+            self.setStatus("Sheared image type: " + shearType + "  using " + interpolationType \
+                           + " interpolation with m = " + str(m_entry))
 
         else:
             self.setStatus("No image geometric transformation is selected.")
