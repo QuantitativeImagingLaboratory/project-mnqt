@@ -103,4 +103,4 @@ class Scale:
         fx = float(new_rows)/rows
         
         bic_intr_obj = Bicubic_Interpolation()
-        return bic_intr_obj.perform_scaling_interpolation(image, fy, fx)
+        return bic_intr_obj.perform_scaling_interpolation(image, fx, fy)
