@@ -45,14 +45,18 @@ class Bicubic_Interpolation:
 
         return resampled_image
 
-    # def perform_interpolation(self, i, j, fx, fy, image, derivativeX, derivativeY, derivativeXY, pt1, pt2, pt3, pt4):
-    #     beta = self.getBeta(image, derivativeX, derivativeY, derivativeXY, pt1, pt2, pt3, pt4)
-    #     alpha = self.getAlpha(beta)
-    #
-    #     w = -(((j / fx) - math.floor(j / fx)) - 1)
-    #     h = -(((i / fy) - math.floor(i / fy)) - 1)
-    #     interpolated_intensity = self.getInterpolatedIntensity(w, h, alpha)
+    def perform_interpolation(self, w, h, image, derivativeX, derivativeY, derivativeXY, pt1, pt2, pt3, pt4):
+        """ Perform Interpolation at one location"""
+        # pt1 = [int(i / fy), int(j / fx)]  # Left
+        # pt2, pt3, pt4 = self.getNeighbouringPoints(pt1, width_original, height_original)
 
+        beta = self.getBetaCareful(image, derivativeX, derivativeY, derivativeXY, pt1, pt2, pt3, pt4)
+        alpha = self.getAlpha(beta)
+
+        # w = -(((j / fx) - math.floor(j / fx)) - 1)
+        # h = -(((i / fy) - math.floor(i / fy)) - 1)
+
+        interpolated_intensity = self.getInterpolatedIntensity(w, h, alpha)
         return interpolated_intensity
 
     def calculate_derivative_x(self, pt1, width_original, image):
@@ -91,10 +95,10 @@ class Bicubic_Interpolation:
         derivativeY = np.zeros([height_original, width_original])
         derivativeXY = np.zeros([height_original, width_original])
 
-        diminishing_factor = .05
+        diminishing_factor = .01
         for i in range(height_original):
             for j in range(width_original):
-                print(i, j)
+                #print(i, j)
                 derivativeX[i][j] = self.calculate_derivative_x([i, j], width_original, image) * diminishing_factor
                 derivativeY[i][j] = self.calculate_derivative_y([i, j], height_original, image) * diminishing_factor
                 derivativeXY[i][j] = self.calculate_derivative_xy([i, j], height_original, width_original, image) * diminishing_factor/2
@@ -171,6 +175,36 @@ class Bicubic_Interpolation:
         Ixy12 = derivateXY[pt2[0]][pt2[1]]
         Ixy21 = derivateXY[pt3[0]][pt3[1]]
         Ixy22 = derivateXY[pt4[0]][pt4[1]]
+        return np.array([I11, I12, I21, I22, Ix11, Ix21, Ix12, Ix22, Iy11, Iy21, Iy12, Iy22, Ixy11, Ixy21, Ixy12, Ixy22])
+
+    def getBetaCareful(self, image, derivateX, derivateY, derivateXY, pt1, pt2, pt3, pt4):
+        (N, M) = image.shape
+        I11 = I12 = I21 = I22 = 0
+        Ix11 = Ix12 = Ix21 = Ix22 = 0
+        Iy11 = Iy12 = Iy21 = Iy22 = 0
+        Ixy11 = Ixy12 = Ixy21 = Ixy22 = 0
+        if pt1[0] < N and pt1[1] < M:
+            I11 = image[pt1[0]][pt1[1]]
+            Ix11 = derivateX[pt1[0]][pt1[1]]
+            Iy11 = derivateY[pt1[0]][pt1[1]]
+            Ixy11 = derivateXY[pt1[0]][pt1[1]]
+        if pt2[0] < N and pt2[1] < M:
+            I12 = image[pt2[0]][pt2[1]]
+            Ix12 = derivateX[pt2[0]][pt2[1]]
+            Iy12 = derivateY[pt2[0]][pt2[1]]
+            Ixy12 = derivateXY[pt2[0]][pt2[1]]
+        if pt3[0] < N and pt3[1] < M:
+            I21 = image[pt3[0]][pt3[1]]
+            Ix21 = derivateX[pt3[0]][pt3[1]]
+            Iy21 = derivateY[pt3[0]][pt3[1]]
+            Ixy21 = derivateXY[pt3[0]][pt3[1]]
+
+        if pt4[0] < N and pt4[1] < M:
+            I22 = image[pt4[0]][pt4[1]]
+            Ix22 = derivateX[pt4[0]][pt4[1]]
+            Iy22 = derivateY[pt4[0]][pt4[1]]
+            Ixy22 = derivateXY[pt4[0]][pt4[1]]
+
         return np.array([I11, I12, I21, I22, Ix11, Ix21, Ix12, Ix22, Iy11, Iy21, Iy12, Iy22, Ixy11, Ixy21, Ixy12, Ixy22])
 
     def getInterpolatedIntensity(self, w, h, alpha):

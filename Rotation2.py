@@ -4,7 +4,10 @@
 #
 #
 import numpy as np
+import math
 from Interpolation import Interpolation
+from Bicubic_Interpolation import Bicubic_Interpolation
+
 
 
 class RotationCoord:
@@ -374,7 +377,86 @@ class Rotation2:
 
 
     def rotateImage_Bicubic(self):
-        """ Rotate Image and do Bicubic Interpolation"""
-        rotated_image = self.rotateImage_NearestNeighbor()
+        """ Rotate Image and do Bicubic Interpolation """
+        if self.rotation_angle % 360 == 0:
+            return self.inputImage
+        else:
+            rotation_test = self.rotation_angle % 360
+            if rotation_test % 270 == 0:
+                return self.rotateImage270()
+            elif rotation_test % 180 == 0:
+                return self.rotateImage180()
+            elif rotation_test % 90 == 0:
+                return self.rotateImage90()
+
+
+        rotation_coord_matrix = self.initializeRotationCoordMatrix()
+        self.get_4_neighborhood(rotation_coord_matrix)  # Get the 4 neighboring pixels of the original image
+        rotated_image = self.makeEmptyRotatedImage()
+
+
+        bicubic_Interpolator = Bicubic_Interpolation() # interpolation object
+        derivativeX, derivativeY, derivativeXY = bicubic_Interpolator.getDerivates(self.inputImage)
+        # print("derivativeX, ", derivativeX, " , derivativeY, ", derivativeY,
+        #       " , derivativeXY, ", derivativeXY)
+
+        #print(" Doing bilinear interpolation: ")
+        N = len(rotation_coord_matrix)
+        for ii in range(N):
+            M = len(rotation_coord_matrix[ii])
+            curr_row = rotation_coord_matrix[ii]
+            for jj in range(M):
+                inputImage_row = int(np.round(curr_row[jj].input_image_y))
+                inputImage_col = int(np.round(curr_row[jj].input_image_x))
+
+                #print("current rotation matrix info: ", curr_row[jj])
+
+                intensity = 0
+                if self.isRCWithinInputImage(inputImage_row, inputImage_col):
+
+                    # derivativeX, derivativeY, derivativeXY = bicubic_Interpolator.getDerivates(self.inputImage)
+
+                    # print("derivativeX, ", derivativeX, " , derivativeY, ", derivativeY,
+                    #       " , derivativeXY, ", derivativeXY)
+
+                    #             _C O L S__
+                    #             leftX      h        rightX
+                    # R      topY| pt1       r1        pt2
+                    # O        w |           P
+                    # W          |
+                    # S   bottomY| pt3       r2        pt4
+
+                    # print(" Rotation Class XY: ", curr_row[jj].input_image_x, ", ", curr_row[jj].input_image_y)
+                    # print(" Rotation Class Surrounding points: ", curr_row[jj].input_image_surrounding_points)
+
+                    #pt1 = [int(i / fy), int(j / fx)]  # Left  # Navneet's x and y set up for reference
+
+                    pt1   = [curr_row[jj].input_image_surrounding_points[0][1],
+                             curr_row[jj].input_image_surrounding_points[0][0]]
+                    pt2   = [curr_row[jj].input_image_surrounding_points[1][1],
+                             curr_row[jj].input_image_surrounding_points[1][0]]
+                    pt3   = [curr_row[jj].input_image_surrounding_points[2][1],
+                             curr_row[jj].input_image_surrounding_points[2][0]]
+                    pt4   = [curr_row[jj].input_image_surrounding_points[3][1],
+                             curr_row[jj].input_image_surrounding_points[3][0]]
+
+                    # w = -(((j / fx) - math.floor(j / fx)) - 1)
+                    # h = -(((i / fy) - math.floor(i / fy)) - 1)
+
+                    h  = -((curr_row[jj].input_image_x - math.floor(curr_row[jj].input_image_x)) - 1)
+                    w  = -((curr_row[jj].input_image_y - math.floor(curr_row[jj].input_image_y)) - 1)
+
+
+                    # print("BC Class pt1, ", pt1, " , pt2, ", pt2, " , pt3, ", pt3, " , pt4, ", pt4)
+                    # print("BC Class w, ", w, " , h, ", h)
+
+
+                    intensity = bicubic_Interpolator.perform_interpolation(w, h, self.inputImage, derivativeX, derivativeY,
+                                                                        derivativeXY, pt1, pt2, pt3, pt4)
+                    # print("output intensity = ", intensity)
+
+                rotated_image[ii][jj] = np.round(intensity)
+
         return rotated_image
+
 
