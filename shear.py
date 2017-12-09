@@ -6,6 +6,7 @@ Shear class
 import math
 import numpy as np
 
+from Bicubic_Interpolation import Bicubic_Interpolation
 from Interpolation import Interpolation
 from Reflection import Reflection
 
@@ -59,9 +60,7 @@ class Shear:
                 # y' = y + m*x -> y = y' - m*x 
                 y = int(i - m*j)
                 
-                if y < 0:
-                    new_image[i,j] = 0
-                elif y >= rows:
+                if y < 0 or y >= rows:
                     new_image[i,j] = 0
                 else:
                     new_image[i,j] = image[y, j]
@@ -81,9 +80,7 @@ class Shear:
                 # x' = x + m*y -> x = x' - m*y 
                 y = i - m*j
                 
-                if int(y) < 0:
-                    new_image[i,j] = 0
-                elif int(y) >= rows:
+                if int(y) < 0 or int(y) >= rows:
                     new_image[i,j] = 0
                 else:
                     # find 4 nearest neighbors
@@ -103,11 +100,14 @@ class Shear:
                     q21 = image[y2,x2]          #W        |
                     q22 = image[y2,x2]          #S      y2| q12    r2    q22
 
-                    new_image[i, j] = interpol.bilinear_interpolation((x1, q11, q12), (x2, q21, q22), y2, y1, (x, y))
+                    new_image[i, j] = np.round(interpol.bilinear_interpolation((x1, q11, q12), (x2, q21, q22), y2, y1, (x, y)))
         
         return new_image
         
     def shear_bicubic(self, image, m):
+        
+        interpol = Bicubic_Interpolation()
+        derivativeX, derivativeY, derivativeXY = interpol.getDerivates(image)
         
         rows, cols = image.shape
         new_rows = int(rows + m*cols)
@@ -118,11 +118,29 @@ class Shear:
                 # x' = x + m*y -> x = x' - m*y 
                 y = i - m*j
                 
-                if int(y) < 0:
-                    new_image[i,j] = 0
-                elif int(y) >= rows:
+                if int(y) < 0 or int(y) >= rows:
                     new_image[i,j] = 0
                 else:
-                    pass
+                    # find 4 nearest neighbors
+                    # ex: x = 20.5, y = 33.3 -> x1 = 20, x2 = 21, y1 = 33, y2 = 34
+                    y1 = math.floor(y)
+                    y2 = math.ceil(y)
+                    if y2 >= rows:
+                        y2 = rows - 1
+                    x = x1 = x2 = j
+                
+                    # interpolate
+
+                                            #          _C O L S__
+                                            #           x1     dX     x2
+                    q11 = (y1,x1)           #R      y1| q11    r1    q21
+                    q12 = (y1,x1)           #O      dY|        P
+                    q21 = (y2,x2)           #W        |
+                    q22 = (y2,x2)           #S      y2| q12    r2    q22
+                        
+                    h  = -((x - math.floor(x)) - 1)
+                    w  = -((y - math.floor(y)) - 1)
+                    
+                    new_image[i, j] = np.round(interpol.perform_interpolation(w, h, image, derivativeX, derivativeY, derivativeXY, q11, q21, q12, q22))
         
         return new_image

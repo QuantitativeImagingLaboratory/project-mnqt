@@ -418,7 +418,7 @@ class ProjectMNQT_UI:
                                       + "_m_" + str(m_entry) + "_type_" \
                                       + str(shearType)
 
-            self.setStatus("Sheared image type: " + shearType + "  using " + interpolationType \
+            self.setStatus("Sheared image type: " + shearType + " using " + interpolationType \
                            + " interpolation with m = " + str(m_entry))
 
         else:
