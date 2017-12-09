@@ -14,7 +14,7 @@ class Reflection:
         row, col = image.shape
         new_image = np.zeros((row, col))
 
-        for x in range(int(row/2)):
+        for x in range(int(row-1/2)):
             for y in range(col):
                 topPix = image[x, y]
                 bottomPix = image[row - x -1, y]
@@ -29,7 +29,7 @@ class Reflection:
         new_image = np.zeros((row, col))
 
         for x in range(row):
-            for y in range(int(col/2)):
+            for y in range(int(col-1/2)):
                 leftPix = image[x, y]
                 rightPix = image[x, col - y - 1]
                 new_image[x, y] = rightPix
